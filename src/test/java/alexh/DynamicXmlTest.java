@@ -100,7 +100,7 @@ public class DynamicXmlTest {
 
     @Test
     public void nestedString() {
-        assertEquals("This is a 'String'", root.get("xml.content_2.string_element", ".").asObject());
+        assertEquals("This is a 'String'", root.get("xml/content_2/string_element", "/").asObject());
     }
 
     @Test
@@ -115,8 +115,8 @@ public class DynamicXmlTest {
 
     @Test
     public void explicitAttributeGetting() {
-        assertEquals("true", root.get("xml.content_2.attribute_element", ".").get("@is_that_right").asObject());
-        assertEquals("true", root.get("xml.content_2.attribute_element[0].@is_that_right", ".").asObject());
+        assertEquals("true", root.get("xml/content_2/attribute_element", "/").get("@is_that_right").asObject());
+        assertEquals("true", root.get("xml/content_2/attribute_element[0]/@is_that_right", "/").asObject());
     }
 
     @Test
@@ -134,6 +134,12 @@ public class DynamicXmlTest {
         Dynamic attrClasher = root.get("xml.content_2.attr_clasher", ".");
         assertEquals("young", attrClasher.get("age").asObject());
         assertEquals("old", attrClasher.get("@age").asObject());
+    }
+
+    @Test
+    public void defaultSlashGetSplitting() {
+        assertEquals(root.get("xml/content_2/string_element"),
+            root.get("xml|content_2|string_element", "|"));
     }
 
     @Test

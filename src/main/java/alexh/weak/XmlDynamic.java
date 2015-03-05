@@ -53,12 +53,14 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
 
     @Override
     public Dynamic get(Object keyObject) {
+        final String keyToString = keyObject.toString();
+        if (keyToString.contains("/")) return get(keyToString, "/");
+
         if (children().allMatch(o -> false)) {
             if (asString().isEmpty()) return new ParentAbsence.Empty<>(this, keyObject);
             return new ParentAbsence.Barren<>(this, keyObject);
         }
 
-        final String keyToString = keyObject.toString();
         final String key;
 
         if (keyToString.endsWith("[0]")) key = keyToString.substring(0, keyToString.length() - 3);
