@@ -25,7 +25,7 @@ public class DynamicXmlTest {
         "<multi_element>3214</multi_element>" +
         "<attribute_element is_that_right=\"true\">555</attribute_element>" +
         "<attr_clasher age=\"old\">" +
-        "  <age>young</age>" +
+            "<age>young</age>" +
         "</attr_clasher>";
 
     static final String XML_CONTENT_2 =
@@ -33,15 +33,16 @@ public class DynamicXmlTest {
 
     static final String XML =
         "<xml>" +
-        "  <content_1>" +
-        "    <empty_element/>" +
-        "    <int_element>12345</int_element>" +
-        "    <large_decimal>12341234123412341234.334234</large_decimal>" +
-        "    <multi_empty_element/>" +
-        "    <multi_empty_element/>" +
-        "    <multi_empty_element/>" +
-        "    <just_attrs hello=\"world\" foo=\"bar\" />" +
-        "  </content_1>" + XML_CONTENT_2 +
+            "<content_1>" +
+                "<empty_element/>" +
+                "<int_element>12345</int_element>" +
+                "<large_decimal>12341234123412341234.334234</large_decimal>" +
+                "<multi_empty_element/>" +
+                "<multi_empty_element/>" +
+                "<multi_empty_element/>" +
+                "<just_attrs hello=\"world\" foo=\"bar\" />" +
+            "</content_1>" +
+            XML_CONTENT_2 +
         "</xml>";
 
     Dynamic root = Dynamic.fromXml(XML);
@@ -137,9 +138,9 @@ public class DynamicXmlTest {
     }
 
     @Test
-    public void defaultSlashGetSplitting() {
-        assertEquals(root.get("xml/content_2/string_element"),
-            root.get("xml|content_2|string_element", "|"));
+    public void defaultGetSplitting() {
+        assertEquals(root.get("xml|content_2|string_element"),
+            root.get("xml.content_2.string_element", "."));
     }
 
     @Test

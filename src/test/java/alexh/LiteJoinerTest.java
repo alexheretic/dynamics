@@ -12,8 +12,6 @@ public class LiteJoinerTest {
     public void some() {
         final String separator = ";";
         final List<?> parts = asList("hello", "you", new Object());
-
-
         assertEquals(parts.get(0) + separator + parts.get(1) + separator + parts.get(2), LiteJoiner.on(separator).join(parts));
     }
 
@@ -21,7 +19,6 @@ public class LiteJoinerTest {
     public void none() {
         final String separator = "-";
         final Iterable<?> parts = asList();
-
         assertEquals("", LiteJoiner.on(separator).join(parts));
     }
 }

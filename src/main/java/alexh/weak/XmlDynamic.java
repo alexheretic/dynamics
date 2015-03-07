@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -26,6 +27,8 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     
     private static final XPathExpression ALL = uncheckedGet(() -> XPathFactory.newInstance().newXPath().compile("//*"));
     private static final String FALLBACK_TO_STRING = "Xml[unable to serialize]";
+    private static final String NONE_NAMESPACE = "none";
+    private static final String NS_INDICATOR = "::";
     
     private static Stream<Node> stream(NodeList nodes) {
         return IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
@@ -51,26 +54,32 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         this(new StringReader(xml));
     }
 
+    /** Dynamic Xml values are always {@link String}s */
+    @Override
+    public boolean is(Class<?> type) {
+        return String.class.equals(type);
+    }
+
     @Override
     public Dynamic get(Object keyObject) {
         final String keyToString = keyObject.toString();
-        if (keyToString.contains("/")) return get(keyToString, "/");
+        if (keyToString.contains("|")) return get(keyToString, "|");
 
         if (children().allMatch(o -> false)) {
             if (asString().isEmpty()) return new ParentAbsence.Empty<>(this, keyObject);
             return new ParentAbsence.Barren<>(this, keyObject);
         }
 
-        final String key;
+        final String key = keyToString.endsWith("[0]") ? keyToString.substring(0, keyToString.length() - 3) : keyToString;
 
-        if (keyToString.endsWith("[0]")) key = keyToString.substring(0, keyToString.length() - 3);
-        else key = keyToString;
+        final String[] nsKey = key.split(NS_INDICATOR);
+        if (nsKey.length == 2) return getWithNamespace(nsKey[0], nsKey[1]);
 
         final Optional<? extends Dynamic> match;
 
         if (key.isEmpty()) match = Optional.empty();
-        else if (key.endsWith("]")) match = elements().filter(el -> el.key.equals(key)).findAny();
         else if (key.startsWith("@")) match = attributes().filter(attr -> attr.key.equals(key)).findAny();
+        else if (key.endsWith("]")) match = elements().filter(el -> el.key.equals(key)).findAny();
         else {
             match = Stream.concat(elements().filter(el -> el.key.equals(key)),
                 attributes().filter(attr -> attr.key.equals("@"+ key))).findFirst();
@@ -79,12 +88,42 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         return match.map(Dynamic.class::cast).orElse(new ChildAbsence.Missing<>(this, keyObject));
     }
 
+    protected Dynamic getWithNamespace(String namespace, String key) {
+        final Optional<? extends Dynamic> match;
+
+        final Predicate<Node> nodeInNamespace;
+        if (NONE_NAMESPACE.equals(namespace)) nodeInNamespace = node -> node.getNamespaceURI() == null;
+        else nodeInNamespace = node -> namespace.equals(node.getNamespaceURI());
+
+        if (key.isEmpty()) match = Optional.empty();
+        else if (key.startsWith("@")) {
+            match = attributesWith(nodeInNamespace).filter(attr -> attr.key.equals(key)).findAny();
+        }
+        else if (key.endsWith("]")) {
+            match = elementsWith(nodeInNamespace).filter(el -> el.key.equals(key)).findAny();
+        }
+        else {
+            match = Stream.concat(elementsWith(nodeInNamespace).filter(el -> el.key.equals(key)),
+                attributesWith(nodeInNamespace).filter(attr -> attr.key.equals("@"+ key))).findFirst();
+        }
+
+        return match.map(Dynamic.class::cast).orElse(new ChildAbsence.Missing<>(this, namespace + NS_INDICATOR + key));
+    }
+
     protected Stream<Child> attributes() {
+        return attributesWith(n -> true);
+    }
+
+    protected Stream<Child> attributesWith(Predicate<Node> predicate) {
         return Stream.empty();
     }
 
     protected Stream<Child> elements() {
-        return Stream.of(childElement(inner, 0));
+        return elementsWith(n -> true);
+    }
+
+    protected Stream<Child> elementsWith(Predicate<Node> predicate) {
+        return Stream.of(inner).filter(predicate).map(n -> childElement(n, 0));
     }
 
     @Override
@@ -114,7 +153,8 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         });
 
         keyLastIndex.forEach((multiKey, maxIndex) -> {
-            keys.removeIf(key -> key.endsWith("]") && key.substring(0, key.indexOf("[")).equals(multiKey));
+            keys.removeIf(key ->
+                key.equals(multiKey) || key.endsWith("]") && key.substring(0, key.indexOf("[")).equals(multiKey));
             keys.add(multiKey + "[0.." + maxIndex + "]");
         });
 
@@ -156,7 +196,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     }
 
     @Override
-    public Object asObject() {
+    public String asObject() {
         return toString();
     }
 
@@ -178,7 +218,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         }
 
         @Override
-        public Object asObject() {
+        public String asObject() {
             return Optional.ofNullable(inner.getFirstChild())
                 .map(Node::getNodeValue)
                 .orElseGet(() -> elements().map(Object::toString)
@@ -188,15 +228,23 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         }
 
         @Override
-        protected Stream<Child> attributes() {
-            return stream(inner.getAttributes()).map(this::childAttribute);
+        protected Stream<Child> attributesWith(Predicate<Node> predicate) {
+            final Map<String, Integer> keyLastIndex = new HashMap<>();
+            return stream(inner.getAttributes())
+                .filter(predicate)
+                .map(attr -> {
+                    final Integer index = Optional.ofNullable(keyLastIndex.get(attr.getLocalName())).map(i -> i + 1).orElse(0);
+                    keyLastIndex.put(attr.getLocalName(), index);
+                    return childAttribute(attr, index);
+                });
         }
 
         @Override
-        protected Stream<Child> elements() {
+        protected Stream<Child> elementsWith(Predicate<Node> predicate) {
             final Map<String, Integer> keyLastIndex = new HashMap<>();
             return stream(inner.getChildNodes())
                 .filter(node -> node.getLocalName() != null)
+                .filter(predicate)
                 .map(node -> {
                     final Integer index = Optional.ofNullable(keyLastIndex.get(node.getLocalName())).map(i -> i + 1).orElse(0);
                     keyLastIndex.put(node.getLocalName(), index);
@@ -214,8 +262,9 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
             return key;
         }
 
-        Child childAttribute(Node inner) {
-            return new Child(inner, this, "@"+ inner.getLocalName());
+        Child childAttribute(Node inner, int index) {
+            String name = "@" + inner.getLocalName();
+            return new Child(inner, this, index == 0 ? name : name + '[' + index + ']');
         }
     }
 }

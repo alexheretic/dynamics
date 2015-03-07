@@ -71,11 +71,11 @@ public interface Dynamic {
         return as(String.class);
     }
 
-    default List<?> asList() {
+    default <T> List<T> asList() {
         return as(List.class);
     }
 
-    default Map<?, ?> asMap() {
+    default <K, V> Map<K, V> asMap() {
         return as(Map.class);
     }
 

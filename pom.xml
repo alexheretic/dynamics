@@ -9,25 +9,38 @@
   <version>1.0-SNAPSHOT</version>
 
   <dependencies>
+    <dependency>
+      <groupId>alexh</groupId>
+      <artifactId>fluent</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+
     <!-- test -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>alexh</groupId>
-      <artifactId>fluent</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <version>1.6</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
