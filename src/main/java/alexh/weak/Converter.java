@@ -16,7 +16,8 @@ public class Converter {
     private static final String VALUE_KEY = "value";
 
     private static final Map<Class<?>, Function<Object, ? extends Converter>> typeConverters =
-        unmodifiableMap(new Fluent.LinkedHashMap<Class<?>, Function<Object, ? extends Converter>>()
+        unmodifiableMap(
+            new Fluent.LinkedHashMap<Class<?>, Function<Object, ? extends Converter>>()
                 .append(Integer.class, IntConverter::new)
                 .append(Long.class, LongConverter::new)
                 .append(Double.class, DoubleConverter::new)
@@ -28,7 +29,6 @@ public class Converter {
                 .append(java.util.Date.class, UtilDateInstantConverter::new)
                 // fallback
                 .append(Object.class, Converter::new)
-
         );
 
     public static Converter convert(Object o) {
@@ -107,7 +107,7 @@ public class Converter {
         catch (RuntimeException ex) { return intoLocalDateTime().atZone(fallback); }
     }
 
-    static class TypeConverter<T> extends Converter {
+    static abstract class TypeConverter<T> extends Converter {
 
         TypeConverter(Object o) {
             super(o);

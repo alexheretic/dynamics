@@ -158,11 +158,29 @@ public class ConverterTest {
     }
 
     @Test
-    public void utilDateToStringParsing() {
+    public void utilDateToStringStyleParsing() {
         test("Sat Mar 07 00:54:06 UTC 2015")
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:54:06Z"))
             .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:54:06Z"))
             .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:54:06"));
+
+        // with millis
+        test("Sat Mar 07 00:54:06.345 UTC 2015")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:54:06.345Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:54:06.345Z"))
+            .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:54:06.345"));
+
+        // local
+        test("Sun Mar 08 07:44:02 2015")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-08T07:44:02Z"))
+            .throwsWhen(Converter::intoZonedDateTime)
+            .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-08T07:44:02"));
+
+        // relaxed leading 0s
+        test("Sun Mar 8 7:44:02 2015")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-08T07:44:02Z"))
+            .throwsWhen(Converter::intoZonedDateTime)
+            .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-08T07:44:02"));
     }
 
     @Test

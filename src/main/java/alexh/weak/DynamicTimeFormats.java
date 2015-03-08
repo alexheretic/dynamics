@@ -91,11 +91,14 @@ public class DynamicTimeFormats {
     public static DateTimeFormatter UTIL_DATE_TO_STRING = new DateTimeFormatterBuilder()
         .appendPattern("EEE")
         .appendLiteral(' ').appendPattern("MMM")
-        .appendLiteral(' ').appendPattern("dd")
-        .appendLiteral(' ').appendPattern("HH")
+        .appendLiteral(' ').appendValue(DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+        .appendLiteral(' ').appendValue(HOUR_OF_DAY, 1, 2, SignStyle.NOT_NEGATIVE)
         .appendLiteral(':').appendPattern("mm")
-        .appendLiteral(':').appendPattern("ss")
-        .appendLiteral(' ').appendPattern("zzz")
+        .optionalStart()
+            .appendLiteral(':').appendPattern("ss")
+            .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).optionalEnd()
+        .optionalEnd()
+        .optionalStart().appendLiteral(' ').appendPattern("zzz").optionalEnd()
         .appendLiteral(' ').appendPattern("yyyy")
         .toFormatter();
 
