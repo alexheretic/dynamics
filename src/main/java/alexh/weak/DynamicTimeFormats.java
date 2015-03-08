@@ -89,6 +89,7 @@ public class DynamicTimeFormats {
 
     /** Parses {@link java.util.Date#toString()} */
     public static DateTimeFormatter UTIL_DATE_TO_STRING = new DateTimeFormatterBuilder()
+        .parseLenient()
         .appendPattern("EEE")
         .appendLiteral(' ').appendPattern("MMM")
         .appendLiteral(' ').appendValue(DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)

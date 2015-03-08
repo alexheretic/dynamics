@@ -181,6 +181,18 @@ public class ConverterTest {
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-08T07:44:02Z"))
             .throwsWhen(Converter::intoZonedDateTime)
             .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-08T07:44:02"));
+
+        // no seconds
+        test("Sun Mar 8 7:44 2015")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-08T07:44:00Z"))
+            .throwsWhen(Converter::intoZonedDateTime)
+            .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-08T07:44:00"));
+
+        // verbose day/month
+        test("Sunday March 8 7:44 2015")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-08T07:44:00Z"))
+            .throwsWhen(Converter::intoZonedDateTime)
+            .converts(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-08T07:44:00"));
     }
 
     @Test
