@@ -19,7 +19,9 @@ class DynamicChildLogic {
 
     public LinkedList<Object> getAscendingKeyChainWithRoot() {
         LinkedList<Object> ascendingKeys = getAscendingChainAllWith(dc -> true).stream()
-            .map(DynamicChild::key)
+            .map(child -> {
+                return child.key().asObject();
+            })
             .collect(toCollection(LinkedList::new));
         ascendingKeys.addFirst(Dynamic.ROOT_KEY);
         return ascendingKeys;

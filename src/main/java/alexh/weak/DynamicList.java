@@ -54,13 +54,18 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
     }
 
     @Override
+    protected Object keyLiteral() {
+        return ROOT_KEY;
+    }
+
+    @Override
     public String describeAvailability() {
         return inner.isEmpty() ? "[]" : format("[0..%d]", inner.size()-1);
     }
 
     @Override
     public String toString() {
-        return "root:"+ describeType() + describeAvailability();
+        return keyLiteral() + ":" + describeType() + describeAvailability();
     }
 
     static class Child extends DynamicList implements DynamicChild {
@@ -80,7 +85,7 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
         }
 
         @Override
-        public Object key() {
+        public Object keyLiteral() {
             return key;
         }
 

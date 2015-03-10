@@ -71,6 +71,8 @@ public class DynamicXmlNamespaceTest {
     @Test
     public void colonUsedToDeclareExplicitNamespaceSelectionOnAttributes() {
         assertThat(root.get("xml|content|ns_attrs|http://another-example.com::@same-name").asString(), is("why?"));
+        assertThat(root.get("xml|content|ns_attrs|http://example.com/rootspace/something::@same-name").asString(),
+            is("what?"));
     }
 
     @Test

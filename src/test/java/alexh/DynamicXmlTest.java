@@ -110,6 +110,14 @@ public class DynamicXmlTest {
     }
 
     @Test
+    public void sumContent2Multis() {
+        assertThat(root.get("xml|content_2").children()
+            .filter(child -> child.key().asString().startsWith("multi_element"))
+            .mapToInt(dy -> Integer.valueOf(dy.asString()))
+            .sum(), is(123 + 3214));
+    }
+
+    @Test
     public void defaultAttributeGetting() {
         assertEquals("true", root.get("xml.content_2.attribute_element", ".").get("is_that_right").asObject());
     }

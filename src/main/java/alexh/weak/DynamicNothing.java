@@ -27,12 +27,17 @@ enum DynamicNothing implements Dynamic, TypeDescriber {
     }
 
     @Override
+    public Dynamic key() {
+        return DynamicChild.key(this, ROOT_KEY);
+    }
+
+    @Override
     public String describeType() {
         return "null";
     }
 
     @Override
     public String toString() {
-        return "root:" + describeType();
+        return ROOT_KEY + ":" + describeType();
     }
 }

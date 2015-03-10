@@ -18,7 +18,9 @@ interface DynamicChild extends Dynamic {
         else return new DynamicSomething.Child(parent, key, val);
     }
 
-    Dynamic parent();
+    static DynamicChild key(Dynamic parent, Object key) {
+        return from(parent, key, key);
+    }
 
-    Object key();
+    Dynamic parent();
 }

@@ -22,8 +22,7 @@ public abstract class ParentAbsence<Parent extends Dynamic> extends AbstractAbse
         LinkedList<Object> keyChain = using(this).getAscendingKeyChainWithRoot();
         keyChain.set(keyChain.size() - 2, "*" + keyChain.get(keyChain.size() - 2).toString() + "*");
         keyChain.addAll(childKeys);
-        final String parentKey = parent instanceof DynamicChild ? ((DynamicChild) parent).key().toString() : ROOT_KEY;
-        return describeIssue(keyChain, parentKey);
+        return describeIssue(keyChain, parent.key().asObject());
     }
 
     @Override

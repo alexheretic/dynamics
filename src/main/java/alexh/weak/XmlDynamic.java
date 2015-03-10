@@ -162,6 +162,11 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     }
 
     @Override
+    protected Object keyLiteral() {
+        return ROOT_KEY;
+    }
+
+    @Override
     public String describeType() {
         return "Xml";
     }
@@ -197,7 +202,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
 
     @Override
     public String asObject() {
-        return toString();
+        return serializer().writeToString(inner);
     }
 
     @Override
@@ -258,7 +263,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         }
 
         @Override
-        public Object key() {
+        public Object keyLiteral() {
             return key;
         }
 

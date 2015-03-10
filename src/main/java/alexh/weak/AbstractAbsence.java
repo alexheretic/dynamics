@@ -20,8 +20,8 @@ abstract class AbstractAbsence<Parent extends Dynamic> implements DynamicChild {
     }
 
     @Override
-    public Object key() {
-        return key;
+    public Dynamic key() {
+        return DynamicChild.key(this, key);
     }
 
     @Override

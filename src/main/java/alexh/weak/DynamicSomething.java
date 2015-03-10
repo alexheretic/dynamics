@@ -22,8 +22,13 @@ class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeD
     }
 
     @Override
+    protected Object keyLiteral() {
+        return ROOT_KEY;
+    }
+
+    @Override
     public String toString() {
-        return "root:" + describeType();
+        return keyLiteral() + ":" + describeType();
     }
 
     @Override
@@ -48,7 +53,7 @@ class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeD
         }
 
         @Override
-        public Object key() {
+        public Object keyLiteral() {
             return key;
         }
 

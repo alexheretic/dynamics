@@ -26,6 +26,6 @@ class DescriptionDeferringAbsence extends AbstractAbsence<DynamicChild> {
         LinkedList<DynamicChild> chainFromDescriber = DynamicChildLogic.using(this).getAscendingChainAllWith(DescriptionDeferringAbsence.class::isInstance);
 
         throw new NoSuchElementException(((IssueDescribingChild) chainFromDescriber.getFirst().parent())
-            .describeIssue(chainFromDescriber.stream().map(DynamicChild::key).collect(toList())));
+            .describeIssue(chainFromDescriber.stream().map(child -> child.key().asObject()).collect(toList())));
     }
 }

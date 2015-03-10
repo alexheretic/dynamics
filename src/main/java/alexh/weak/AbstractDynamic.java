@@ -23,6 +23,13 @@ public abstract class AbstractDynamic<T> implements Dynamic {
         return inner.hashCode();
     }
 
+    protected abstract Object keyLiteral();
+
+    @Override
+    public Dynamic key() {
+        return DynamicChild.key(this, keyLiteral());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

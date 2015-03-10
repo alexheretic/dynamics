@@ -8,8 +8,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
 
-public interface Dynamic {
+public interface Dynamic extends Weak {
 
+    /** Default key value for top-level Dynamic instances */
     String ROOT_KEY = "root";
 
     static Dynamic from(Object val) {
@@ -34,10 +35,6 @@ public interface Dynamic {
 
     Dynamic get(Object key);
 
-    boolean isPresent();
-
-    Object asObject();
-
     Stream<Dynamic> children();
 
     default Set<Dynamic> childSet() {
@@ -51,47 +48,10 @@ public interface Dynamic {
         return result;
     }
 
-    default Dynamic get(String key, char separator) {
-        return get(key, String.valueOf(separator));
-    }
-
-    default Optional<Object> asOptional() {
-        return isPresent() ? Optional.of(asObject()) : Optional.empty();
-    }
-
-    default <T> Optional<T> asOptional(Class<T> type) {
-        return asOptional().map(type::cast);
-    }
-
-    default <T> T as(Class<T> type) {
-        return type.cast(asObject());
-    }
-
-    default String asString() {
-        return as(String.class);
-    }
-
-    default <T> List<T> asList() {
-        return as(List.class);
-    }
-
-    default <K, V> Map<K, V> asMap() {
-        return as(Map.class);
-    }
-
-    default boolean is(Class<?> type) {
-        return isPresent() && type.isInstance(asObject());
-    }
-
-    default boolean isMap() {
-        return is(Map.class);
-    }
-
-    default boolean isString() {
-        return is(String.class);
-    }
-
-    default boolean isList() {
-        return is(List.class);
-    }
+    /**
+     * Returns Weak instance wrapping the key for this node. To get the inner key call {@link Weak#asObject()}
+     * Top-level Dynamic objects have the key value {@link Dynamic#ROOT_KEY}
+     * @return key instance wrapper
+     */
+    Weak key();
 }

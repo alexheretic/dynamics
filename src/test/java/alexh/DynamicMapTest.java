@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -20,6 +21,13 @@ public class DynamicMapTest {
         .append(1, "something")
         .append("dictionary", new Fluent.HashMap<>()
             .append("hello", 123)));
+
+    @Test
+    public void key() {
+        assertThat(dynamicMap.key().asObject(), is(Dynamic.ROOT_KEY));
+        assertThat(dynamicMap.get("hello").key().asObject(), is("hello"));
+        System.out.println(dynamicMap.key().asOptional());
+    }
 
     @Test
     public void stringGetsMatchToStringsIfOtherwiseWouldBeAbsent() {

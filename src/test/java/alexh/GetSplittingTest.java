@@ -48,17 +48,12 @@ public class GetSplittingTest {
 
     @Test
     public void asciiCharacter() {
-        assertEquals("blah", dy.get("key5⇀3⇀55", '⇀').asObject());
-    }
-
-    @Test
-    public void mixedPath_char() {
-        assertEquals("blah", dy.get("key5`3`55", '`').asObject());
+        assertEquals("blah", dy.get("key5⇀3⇀55", "⇀").asObject());
     }
 
     @Test
     public void separateCallsSplitDifferently() {
-        assertEquals("world", dy.get("key1.key3", '.').get("key7<>hello", "<>").asObject());
+        assertEquals("world", dy.get("key1.key3", ".").get("key7<>hello", "<>").asObject());
     }
 
     @Test

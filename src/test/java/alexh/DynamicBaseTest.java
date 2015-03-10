@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toSet;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class DynamicBaseTest {
@@ -229,5 +230,10 @@ public class DynamicBaseTest {
 
         assertEquals(expected, dy.children().collect(toSet()));
         assertEquals(expected, dy.childSet());
+    }
+
+    @Test
+    public void providesConverterInstanceMethod() {
+        assertThat(dy.get("key1.key3.key4", ".").convert().intoString(), is("123"));
     }
 }

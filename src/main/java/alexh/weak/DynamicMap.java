@@ -52,8 +52,13 @@ class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDesc
     }
 
     @Override
+    public Object keyLiteral() {
+        return ROOT_KEY;
+    }
+
+    @Override
     public String toString() {
-        return "root:"+ describeType() + describeAvailability();
+        return keyLiteral() + ":"+ describeType() + describeAvailability();
     }
 
     static class Child extends DynamicMap implements DynamicChild {
@@ -73,7 +78,7 @@ class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDesc
         }
 
         @Override
-        public Object key() {
+        public Object keyLiteral() {
             return key;
         }
 
