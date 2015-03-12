@@ -1,7 +1,7 @@
 Dynamics
 ------
 
-Dynamics is a Java library for handling nested dynamic data
+Dynamics is a Java library for handling nested weakly-typed data
 
 More info coming soon...
 
