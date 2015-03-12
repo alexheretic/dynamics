@@ -14,8 +14,7 @@ import java.util.stream.Stream;
 import static alexh.ConverterTest.Tester.test;
 import static alexh.weak.Converter.convert;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.toCollection;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
@@ -50,7 +49,6 @@ public class ConverterTest {
     public void aString() {
         test("hello world")
             .expect(Converter::intoString, "hello world")
-            .expect(Converter::unconverted, "hello world")
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, "hello world"))
             .expect(Converter::intoList, asList("hello world"))
             .throwsWhen(Converter::intoInteger)
@@ -280,7 +278,6 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 59839))
-            .expect(Converter::unconverted, 59839)
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -295,7 +292,6 @@ public class ConverterTest {
             .expect(Converter::intoString, "123412344444")
             .expect(Converter::intoList, singletonList(123412344444l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 123412344444l))
-            .expect(Converter::unconverted, 123412344444l)
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -311,7 +307,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(bigDouble))
             .expect(Converter::intoList, singletonList(bigDouble))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, bigDouble))
-            .expect(Converter::unconverted, bigDouble)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -327,7 +322,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDouble))
             .expect(Converter::intoList, singletonList(someDouble))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDouble))
-            .expect(Converter::unconverted, someDouble)
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -343,7 +337,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(smallDouble))
             .expect(Converter::intoList, singletonList(smallDouble))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, smallDouble))
-            .expect(Converter::unconverted, smallDouble)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -359,7 +352,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(bigDecimal))
             .expect(Converter::intoList, singletonList(bigDecimal))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, bigDecimal))
-            .expect(Converter::unconverted, bigDecimal)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -375,7 +367,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDecimal))
             .expect(Converter::intoList, singletonList(someDecimal))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDecimal))
-            .expect(Converter::unconverted, someDecimal)
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -391,7 +382,6 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(smallDecimal))
             .expect(Converter::intoList, singletonList(smallDecimal))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, smallDecimal))
-            .expect(Converter::unconverted, smallDecimal)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -406,7 +396,6 @@ public class ConverterTest {
             .expect(Converter::intoString, "hello")
             .expect(Converter::intoList, singletonList("hello"))
             .expect(Converter::intoMap, singletonMap(0, "hello"))
-            .expect(Converter::unconverted, singletonList("hello"))
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -421,7 +410,6 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(0, 59839))
-            .expect(Converter::unconverted, singletonList(59839))
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -438,7 +426,6 @@ public class ConverterTest {
             .expect(Converter::intoMap, new Fluent.HashMap<Integer, String>()
                 .append(0, "hello")
                 .append(1, "world"))
-            .expect(Converter::unconverted, asList("hello", "world"))
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -456,7 +443,6 @@ public class ConverterTest {
             .expect(Converter::intoMap, new Fluent.HashMap<Integer, String>()
                 .append(0, "hello")
                 .append(1, "world"))
-            .expect(Converter::unconverted, set)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }
@@ -482,7 +468,104 @@ public class ConverterTest {
                 .append(7, 'l')
                 .append(8, 'l')
                 .append(9, 'o'))
-            .expect(Converter::unconverted, iterable)
+            .throwsWhen(Converter::intoLocalDateTime)
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void objectArray() {
+        final String[] array = new String[] { "hello", "world", "12345" };
+        test(array)
+            .throwsWhen(Converter::intoInteger)
+            .throwsWhen(Converter::intoLong)
+            .throwsWhen(Converter::intoDouble)
+            .throwsWhen(Converter::intoDecimal)
+            .expect(Converter::intoString, Arrays.toString(array))
+            .expect(Converter::intoList, asList("hello", "world", "12345"))
+            .expect(Converter::intoMap, new Fluent.HashMap<Integer, String>()
+                .append(0, "hello")
+                .append(1, "world")
+                .append(2, "12345"))
+            .throwsWhen(Converter::intoLocalDateTime)
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void valueMapUnpacking() {
+        Map valueMap = singletonMap(EXPECTED_DEFAULT_MAP_KEY, 12341234);
+        test(valueMap)
+            .expect(Converter::intoInteger, 12341234)
+            .expect(Converter::intoLong, 12341234l)
+            .expect(Converter::intoDouble, 12341234d)
+            .expect(Converter::intoDecimal, new BigDecimal(12341234))
+            .expect(Converter::intoString, "12341234")
+            .expect(Converter::intoList, singletonList(12341234))
+            .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 12341234))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341234), ZoneId.systemDefault()))
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void nonValueSingletonMapUnpacking() {
+        Map valueMap = singletonMap("anything-else", 12341234);
+        test(valueMap)
+            .throwsWhen(Converter::intoInteger)
+            .throwsWhen(Converter::intoLong)
+            .throwsWhen(Converter::intoDouble)
+            .throwsWhen(Converter::intoDecimal)
+            .expect(Converter::intoString, singletonMap("anything-else", 12341234).toString())
+            .expect(Converter::intoList, singletonList(12341234))
+            .expect(Converter::intoMap, singletonMap("anything-else", 12341234))
+            .throwsWhen(Converter::intoLocalDateTime)
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void map() {
+        final Object someObj = new Object();
+        final Map someMap = new Fluent.LinkedHashMap<>()
+            .append("something", 2341234)
+            .append(12341234, someObj)
+            .append(null, 333);
+
+        test(someMap)
+            .throwsWhen(Converter::intoInteger)
+            .throwsWhen(Converter::intoLong)
+            .throwsWhen(Converter::intoDouble)
+            .throwsWhen(Converter::intoDecimal)
+            .expect(Converter::intoString, someMap.toString())
+            .expect(Converter::intoList, asList(2341234, someObj, 333))
+            .expect(Converter::intoMap, someMap)
+            .throwsWhen(Converter::intoLocalDateTime)
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void nonEmptyOptionalUnpacking() {
+        final Optional<Long> optional = Optional.of(1234123412341234l);
+        test(optional)
+            .throwsWhen(Converter::intoInteger)
+            .expect(Converter::intoLong, 1234123412341234l)
+            .expect(Converter::intoDouble, 1234123412341234d)
+            .expect(Converter::intoDecimal, new BigDecimal(1234123412341234l))
+            .expect(Converter::intoString, "1234123412341234")
+            .expect(Converter::intoList, singletonList(1234123412341234l))
+            .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 1234123412341234l))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.systemDefault()))
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void emptyOptional() {
+        final Optional<Long> optional = Optional.empty();
+        test(optional)
+            .throwsWhen(Converter::intoInteger)
+            .throwsWhen(Converter::intoLong)
+            .throwsWhen(Converter::intoDouble)
+            .throwsWhen(Converter::intoDecimal)
+            .expect(Converter::intoString, optional.toString())
+            .expect(Converter::intoList, emptyList())
+            .expect(Converter::intoMap, emptyMap())
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
     }

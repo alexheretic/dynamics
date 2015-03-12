@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toCollection;
@@ -31,12 +32,16 @@ public class Converter {
                 .append(Iterable.class, IterableConverter::new)
                 .append(Optional.class, OptionalConverter::new)
                 .append(java.util.Date.class, UtilDateInstantConverter::new)
-                    // fallback
+                // fallback
                 .append(Object.class, Converter::new)
         );
 
     public static Converter convert(Object o) {
         requireNonNull(o);
+
+        if (o instanceof Object[])
+            return convert(asList((Object[]) o));
+
         return typeConverters.getOrDefault(o.getClass(), typeConverters.entrySet().stream()
             .filter(entry -> entry.getKey().isInstance(o))
             .findFirst()
@@ -55,10 +60,6 @@ public class Converter {
 
     Converter(Object o) {
         this.o = o;
-    }
-
-    public final Object unconverted() {
-        return o;
     }
 
     public String intoString() {
