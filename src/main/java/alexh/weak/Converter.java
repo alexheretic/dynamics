@@ -129,6 +129,10 @@ public class Converter {
         return LocalDateTime.from(DynamicTimeFormats.parseWithDefaults(intoString()));
     }
 
+    public boolean intoLocalDateTimeWorks() {
+        return doesNotThrow(this::intoLocalDateTime);
+    }
+
     /**
      * Converts to string & permissively parses as a date, requiring a time zone to be parsed
      * defaults day->1, month->1, hour->0, minute->0, second->0, nanoseconds->0
@@ -136,6 +140,10 @@ public class Converter {
      */
     public ZonedDateTime intoZonedDateTime() {
         return ZonedDateTime.from(DynamicTimeFormats.parseWithDefaults(intoString()));
+    }
+
+    public boolean intoZonedDateTimeWorks() {
+        return doesNotThrow(this::intoZonedDateTime);
     }
 
     /**

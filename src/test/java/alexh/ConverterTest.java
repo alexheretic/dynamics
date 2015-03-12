@@ -26,23 +26,31 @@ public class ConverterTest {
     private static final String EXPECTED_DEFAULT_MAP_KEY = "value";
 
     @Test
-    public void booleanWorks_working() {
+    public void mostlyWorkingWorksMethod() {
         test("12341234")
             .expect(Converter::intoStringWorks, true)
             .expect(Converter::intoIntegerWorks, true)
             .expect(Converter::intoLongWorks, true)
             .expect(Converter::intoDoubleWorks, true)
-            .expect(Converter::intoDecimalWorks, true);
+            .expect(Converter::intoDecimalWorks, true)
+            .expect(Converter::intoListWorks, true)
+            .expect(Converter::intoMapWorks, true)
+            .expect(Converter::intoLocalDateTimeWorks, true)
+            .expect(Converter::intoZonedDateTimeWorks, false);
     }
 
     @Test
-    public void booleanWorks_notWorking() {
+    public void mostlyNotWorkingWorksMethod() {
         test(new Object())
             .expect(Converter::intoStringWorks, true)
             .expect(Converter::intoIntegerWorks, false)
             .expect(Converter::intoLongWorks, false)
             .expect(Converter::intoDoubleWorks, false)
-            .expect(Converter::intoDecimalWorks, false);
+            .expect(Converter::intoDecimalWorks, false)
+            .expect(Converter::intoListWorks, true)
+            .expect(Converter::intoMapWorks, true)
+            .expect(Converter::intoLocalDateTimeWorks, false)
+            .expect(Converter::intoZonedDateTimeWorks, false);
     }
 
     @Test
