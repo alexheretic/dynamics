@@ -1,7 +1,7 @@
 Dynamics
 ------
 
-Fluent is a Java library for handling nested dynamic data
+Dynamics is a Java library for handling nested dynamic data
 
 More info coming soon...
 
