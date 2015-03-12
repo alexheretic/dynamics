@@ -157,22 +157,10 @@ public class DynamicBaseTest {
     }
 
     @Test
-    public void asTypedOptional() {
-        Optional<String> key1Key2 = dy.get("key1").get("key2").asOptional(String.class);
-        assertEquals(Optional.of("hello"), key1Key2);
+    public void maybe() {
+        assertEquals(dy.asObject(), dy.maybe().map(d -> d.asObject()).orElse(null));
 
-        Optional<Integer> key1Key3Key4 = dy.get("key1").get("key3").get("key4").asOptional(Integer.class);
-        assertEquals(Optional.of(123), key1Key3Key4);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void mapAs_notClass() {
-        dy.get("key1").get("key2").asOptional(LocalDate.class).map(LocalDate::atStartOfDay);
-    }
-
-    @Test
-    public void mapAs_absent() {
-        assertFalse(dy.get("key44").asOptional(LocalDate.class).isPresent());
+        assertFalse(dy.get("key44").get("key24").maybe().isPresent());
     }
 
     @Test

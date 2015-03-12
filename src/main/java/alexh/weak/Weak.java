@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Wrapper for a weakly typed object or absence, providing casting, presence gathering & conversion methods */
-public interface Weak {
+public interface Weak<Self extends Weak<Self>> {
 
     /**
      * Returns if this instance wraps a non-null value. True implies {@link Weak#asObject()} will not throw
@@ -26,17 +26,6 @@ public interface Weak {
      */
     default Optional<Object> asOptional() {
         return isPresent() ? Optional.of(asObject()) : Optional.empty();
-    }
-
-    /**
-     * Converts this value/absence wrapper into a standard optional of cast type
-     * @param type cast type
-     * @param <T> cast type
-     * @return optional with consistent {@link Optional#isPresent()} to {@link Weak#isPresent()}
-     * @throws todo cast error
-     */
-    default <T> Optional<T> asOptional(Class<T> type) {
-        return asOptional().map(type::cast);
     }
 
     /**
@@ -115,5 +104,14 @@ public interface Weak {
      */
     default Converter convert() {
         return Converter.convert(asObject());
+    }
+
+    /**
+     * Returns an optional wrapping of this instance, with resultant
+     * {@link Optional#isPresent} return consistent with {@link Weak#isPresent()}
+     * @return optional wrapping of this, or empty if this is absent
+     */
+    default Optional<Self> maybe() {
+        return isPresent() ? Optional.of((Self) this) : Optional.empty();
     }
 }

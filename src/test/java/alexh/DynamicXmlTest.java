@@ -170,24 +170,24 @@ public class DynamicXmlTest {
     @Test
     public void toStringImplementation() {
         try {
-            Diff diff = new Diff(XML, root.toString());
+            Diff diff = new Diff(XML, root.asString());
             assertTrue(diff.toString(), diff.identical());
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            fail("\""+ root.toString() + "\"" + " != \"" + XML_CONTENT_2_GUTS + "\"");
+            fail("\""+ root.asString() + "\"" + " != \"" + XML + "\"");
         }
     }
 
     @Test
     public void childToStringImplementation() {
         try {
-            Diff diff = new Diff(XML_CONTENT_2, root.get("xml.content_2", ".").toString());
+            Diff diff = new Diff("<wrap>" + XML_CONTENT_2_GUTS + "</wrap>", "<wrap>" + root.get("xml.content_2", ".").asString()+ "</wrap>");
             assertTrue(diff.toString(), diff.identical());
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            fail("\""+ root.get("xml.content_2", ".").toString() + "\"" + " != \"" + XML_CONTENT_2_GUTS + "\"");
+            fail("\""+ root.get("xml.content_2", ".").asString() + "\"" + " != \"" + XML_CONTENT_2_GUTS + "\"");
         }
     }
 

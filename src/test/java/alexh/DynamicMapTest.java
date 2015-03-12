@@ -26,7 +26,6 @@ public class DynamicMapTest {
     public void key() {
         assertThat(dynamicMap.key().asObject(), is(Dynamic.ROOT_KEY));
         assertThat(dynamicMap.get("hello").key().asObject(), is("hello"));
-        System.out.println(dynamicMap.key().asOptional());
     }
 
     @Test

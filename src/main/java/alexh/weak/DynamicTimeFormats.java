@@ -18,8 +18,7 @@ public class DynamicTimeFormats {
     public static DateTimeFormatter ISO_PERMISSIVE = new DateTimeFormatterBuilder()
         .parseLenient()
         .parseCaseInsensitive()
-        .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-        .optionalStart()
+        .appendValue(YEAR, 1, 10, SignStyle.EXCEEDS_PAD)
         .appendLiteral('-').appendValue(MONTH_OF_YEAR, 1, 2, SignStyle.NOT_NEGATIVE)
         .optionalStart()
         .appendLiteral('-').appendValue(DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
@@ -35,15 +34,33 @@ public class DynamicTimeFormats {
         .appendOffsetId()
         .optionalStart()
         .appendLiteral('[').parseCaseSensitive().appendZoneRegionId().appendLiteral(']')
-
         .toFormatter();
 
     /**
      * Parses ISO date-strings as permissively as possible,
-     * defaults day->1, month->1, hour->0, minute->0, second->0, nanoseconds->0
+     * defaults day->1, hour->0, minute->0, second->0, nanoseconds->0
      */
     public static DateTimeFormatter ISO_PERMISSIVE_WITH_DEFAULTS = new DateTimeFormatterBuilder()
         .append(ISO_PERMISSIVE)
+        .parseDefaulting(DAY_OF_MONTH, 1)
+        .parseDefaulting(HOUR_OF_DAY, 0)
+        .parseDefaulting(MINUTE_OF_HOUR, 0)
+        .parseDefaulting(SECOND_OF_MINUTE, 0)
+        .parseDefaulting(NANO_OF_SECOND, 0)
+        .toFormatter();
+
+    /** Parses up to 4 digit years declared on their own */
+    public static DateTimeFormatter ISO_LONESOME_YEAR = new DateTimeFormatterBuilder()
+        .parseStrict()
+        .appendValue(YEAR, 1, 4, SignStyle.NORMAL)
+        .toFormatter();
+
+    /**
+     * Parses up to 4 digit years declared on their own
+     * defaults day->1, month->1, hour->0, minute->0, second->0, nanoseconds->0
+     */
+    public static DateTimeFormatter ISO_LONESOME_YEAR_WITH_DEFAULTS = new DateTimeFormatterBuilder()
+        .append(ISO_LONESOME_YEAR)
         .parseDefaulting(MONTH_OF_YEAR, 1)
         .parseDefaulting(DAY_OF_MONTH, 1)
         .parseDefaulting(HOUR_OF_DAY, 0)
@@ -53,16 +70,14 @@ public class DynamicTimeFormats {
         .toFormatter();
 
     /** Parses date-strings like "12-Mar-2015 12:34:54.654+03:00" */
-    public static DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE = new DateTimeFormatterBuilder()
+    public static DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE_DASH = new DateTimeFormatterBuilder()
         .parseCaseInsensitive()
         .parseLenient()
-        .appendValue(DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
-        .optionalStart().appendLiteral('-').optionalEnd()
-        .optionalStart().appendLiteral('/').optionalEnd()
+        .appendPattern("dd")
+        .appendLiteral('-')
         .appendPattern("MMM")
-        .optionalStart().appendLiteral('-').optionalEnd()
-        .optionalStart().appendLiteral('/').optionalEnd()
-        .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+        .appendLiteral('-')
+        .appendValue(YEAR, 1, 10, SignStyle.EXCEEDS_PAD)
         .optionalStart()
         .appendLiteral(' ').appendValue(HOUR_OF_DAY, 1, 2, SignStyle.NOT_NEGATIVE)
         .optionalStart()
@@ -79,8 +94,41 @@ public class DynamicTimeFormats {
      * Parses date-strings like "12-Mar-2015 12:34:54.654+03:00"
      * defaults day->1, month->1, hour->0, minute->0, second->0, nanoseconds->0
      */
-    public static  DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE_WITH_DEFAULTS = new DateTimeFormatterBuilder()
-        .append(DAY_MONTH_YEAR_PERMISSIVE)
+    public static  DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE_DASH_WITH_DEFAULTS = new DateTimeFormatterBuilder()
+        .append(DAY_MONTH_YEAR_PERMISSIVE_DASH)
+        .parseDefaulting(HOUR_OF_DAY, 0)
+        .parseDefaulting(MINUTE_OF_HOUR, 0)
+        .parseDefaulting(SECOND_OF_MINUTE, 0)
+        .parseDefaulting(NANO_OF_SECOND, 0)
+        .toFormatter();
+
+    /** Parses date-strings like "12/Mar/2015 12:34:54.654+03:00" */
+    public static DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE_SLASH = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .parseLenient()
+        .appendPattern("dd")
+        .appendLiteral('/')
+        .appendPattern("MMM")
+        .appendLiteral('/')
+        .appendValue(YEAR, 1, 10, SignStyle.EXCEEDS_PAD)
+        .optionalStart()
+        .appendLiteral(' ').appendValue(HOUR_OF_DAY, 1, 2, SignStyle.NOT_NEGATIVE)
+        .optionalStart()
+        .appendLiteral(':').appendValue(MINUTE_OF_HOUR, 1, 2, SignStyle.NOT_NEGATIVE)
+        .optionalStart()
+        .appendLiteral(':').appendValue(SECOND_OF_MINUTE, 1, 2, SignStyle.NOT_NEGATIVE)
+        .optionalStart()
+        .appendFraction(NANO_OF_SECOND, 0, 9, true)
+        .optionalStart()
+        .appendOffsetId()
+        .toFormatter();
+
+    /**
+     * Parses date-strings like "12/Mar/2015 12:34:54.654+03:00"
+     * defaults day->1, month->1, hour->0, minute->0, second->0, nanoseconds->0
+     */
+    public static  DateTimeFormatter DAY_MONTH_YEAR_PERMISSIVE_SLASH_WITH_DEFAULTS = new DateTimeFormatterBuilder()
+        .append(DAY_MONTH_YEAR_PERMISSIVE_SLASH)
         .parseDefaulting(HOUR_OF_DAY, 0)
         .parseDefaulting(MINUTE_OF_HOUR, 0)
         .parseDefaulting(SECOND_OF_MINUTE, 0)
@@ -104,29 +152,37 @@ public class DynamicTimeFormats {
         .toFormatter();
 
     /** Epoch milliseconds -> TemporalAccessor assuming system default zone id */
-    static final Function<CharSequence, TemporalAccessor> EPOCH_MILLIS_PARSER =
-        s -> LocalDateTime.ofInstant(Instant.ofEpochMilli(convert(s).intoLong()), ZoneId.systemDefault());
+    static final Function<CharSequence, TemporalAccessor> EPOCH_MILLIS_PARSER = s -> {
+        Long millis = convert(s).intoLong();
+        if (millis > -10000 && millis < 10000)
+            throw new IllegalArgumentException("Small value '"+ s +"' indicates it is not valid epoch millis");
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(convert(s).intoLong()), ZoneId.systemDefault());
+    };
 
 
     /**
      * Tries all permissive parsers, taking the first success or throwing the first exception if all fail
-     * ISO_PERMISSIVE -> DAY_MONTH_YEAR_PERMISSIVE -> UTIL_DATE_TO_STRING -> EPOCH_MILLIS_PARSER
+     * ISO_PERMISSIVE -> DAY_MONTH_YEAR_PERMISSIVE_DASH -> UTIL_DATE_TO_STRING -> EPOCH_MILLIS_PARSER
      */
     public static final Function<CharSequence, TemporalAccessor> ALL_PARSER = orderedParseAttempter(
         ISO_PERMISSIVE::parse,
-        DAY_MONTH_YEAR_PERMISSIVE::parse,
+        DAY_MONTH_YEAR_PERMISSIVE_DASH::parse,
+        DAY_MONTH_YEAR_PERMISSIVE_SLASH::parse,
         UTIL_DATE_TO_STRING::parse,
+        ISO_LONESOME_YEAR::parse,
         EPOCH_MILLIS_PARSER);
 
     /**
      * Tries all permissive parsers (with defaults where applicable), taking the first success or throwing the first
      * exception if all fail
-     * ISO_PERMISSIVE -> DAY_MONTH_YEAR_PERMISSIVE -> UTIL_DATE_TO_STRING -> EPOCH_MILLIS_PARSER
+     * ISO_PERMISSIVE -> DAY_MONTH_YEAR_PERMISSIVE_DASH -> UTIL_DATE_TO_STRING -> EPOCH_MILLIS_PARSER
      */
     public static final Function<CharSequence, TemporalAccessor> ALL_PARSER_WITH_DEFAULTS = orderedParseAttempter(
         ISO_PERMISSIVE_WITH_DEFAULTS::parse,
-        DAY_MONTH_YEAR_PERMISSIVE_WITH_DEFAULTS::parse,
+        DAY_MONTH_YEAR_PERMISSIVE_DASH_WITH_DEFAULTS::parse,
+        DAY_MONTH_YEAR_PERMISSIVE_SLASH_WITH_DEFAULTS::parse,
         UTIL_DATE_TO_STRING::parse,
+        ISO_LONESOME_YEAR_WITH_DEFAULTS::parse,
         EPOCH_MILLIS_PARSER);
 
     /**

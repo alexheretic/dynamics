@@ -177,7 +177,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
 
     @Override
     public int hashCode() {
-        final String toString = toString();
+        final String toString = fullXml();
         return FALLBACK_TO_STRING.equals(toString) ? super.hashCode() : toString.hashCode();
     }
 
@@ -186,8 +186,8 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final String otherAsString = o.toString();
-        return !FALLBACK_TO_STRING.equals(otherAsString) && otherAsString.equals(this.toString());
+        final String otherAsString = ((XmlDynamic)o).fullXml();
+        return !FALLBACK_TO_STRING.equals(otherAsString) && otherAsString.equals(this.fullXml());
     }
 
     protected LSSerializer serializer() {
@@ -205,10 +205,14 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         return serializer().writeToString(inner);
     }
 
-    @Override
-    public String toString() {
+    protected String fullXml() {
         try { return serializer().writeToString(inner); }
         catch (RuntimeException ex) { return FALLBACK_TO_STRING; }
+    }
+
+    @Override
+    public String toString() {
+        return keyLiteral() + ":"+ describeType() + describeAvailability();
     }
 
     static class Child extends XmlDynamic implements DynamicChild {
@@ -226,7 +230,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         public String asObject() {
             return Optional.ofNullable(inner.getFirstChild())
                 .map(Node::getNodeValue)
-                .orElseGet(() -> elements().map(Object::toString)
+                .orElseGet(() -> elements().map(Child::fullXml)
                             .map(String::trim)
                             .reduce((s1, s2) -> s1 + s2)
                             .orElse(""));

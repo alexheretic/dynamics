@@ -8,8 +8,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.StreamSupport.stream;
 
 public class Converter {
 
@@ -22,20 +26,29 @@ public class Converter {
                 .append(Long.class, LongConverter::new)
                 .append(Double.class, DoubleConverter::new)
                 .append(BigDecimal.class, DecimalConverter::new)
-                .append(Dynamic.class, o -> convert(((Dynamic)o).asObject()))
+                .append(Dynamic.class, o -> convert(((Dynamic) o).asObject()))
                 .append(Map.class, MapConverter::new)
-                .append(Collection.class, CollectionConverter::new)
+                .append(Iterable.class, IterableConverter::new)
                 .append(Optional.class, OptionalConverter::new)
                 .append(java.util.Date.class, UtilDateInstantConverter::new)
-                // fallback
+                    // fallback
                 .append(Object.class, Converter::new)
         );
 
     public static Converter convert(Object o) {
+        requireNonNull(o);
         return typeConverters.getOrDefault(o.getClass(), typeConverters.entrySet().stream()
             .filter(entry -> entry.getKey().isInstance(o))
             .findFirst()
             .map(Map.Entry::getValue).get()).apply(o);
+    }
+
+    private static boolean doesNotThrow(Supplier<?> method) {
+        try {
+            method.get();
+            return true;
+        }
+        catch (RuntimeException ex) { return false; }
     }
 
     protected final Object o;
@@ -44,38 +57,66 @@ public class Converter {
         this.o = o;
     }
 
+    public final Object unconverted() {
+        return o;
+    }
+
     public String intoString() {
         return o.toString();
+    }
+
+    public boolean intoStringWorks() {
+        return doesNotThrow(this::intoString);
     }
 
     public int intoInteger() {
         return intoDecimal().setScale(0, RoundingMode.HALF_UP).intValueExact();
     }
 
+    public boolean intoIntegerWorks() {
+        return doesNotThrow(this::intoInteger);
+    }
+
     public long intoLong() {
         return intoDecimal().setScale(0, RoundingMode.HALF_UP).longValueExact();
+    }
+
+    public boolean intoLongWorks() {
+        return doesNotThrow(this::intoLong);
     }
 
     public double intoDouble() {
         return intoDecimal().doubleValue();
     }
 
+    public boolean intoDoubleWorks() {
+        return doesNotThrow(this::intoDouble);
+    }
+
     public BigDecimal intoDecimal() {
         return new BigDecimal(intoString());
     }
 
-    public Object intoObject() {
-        return o;
+    public boolean intoDecimalWorks() {
+        return doesNotThrow(this::intoDecimal);
     }
 
     public Map intoMap() {
         return new Fluent.HashMap<>().append(VALUE_KEY, o);
     }
 
+    public boolean intoMapWorks() {
+        return doesNotThrow(this::intoMap);
+    }
+
     public List intoList() {
         List list = new ArrayList();
         list.add(o);
         return list;
+    }
+
+    public boolean intoListWorks() {
+        return doesNotThrow(this::intoList);
     }
 
     /**
@@ -153,6 +194,8 @@ public class Converter {
 
         @Override
         public int intoInteger() {
+            if (literal() < Integer.MIN_VALUE || literal() > Integer.MAX_VALUE)
+                throw new IllegalArgumentException(literal() + " too large/small to be cast to int");
             return literal().intValue();
         }
 
@@ -213,32 +256,27 @@ public class Converter {
 
         @Override
         public String intoString() {
-            return value().map(o -> convert(o).intoString()).orElse(super.intoString());
-        }
-
-        @Override
-        public Object intoObject() {
-            return value().map(o -> convert(o).intoObject()).orElse(literal().size());
+            return value().map(o -> convert(o).intoString()).orElseGet(super::intoString);
         }
 
         @Override
         public int intoInteger() {
-            return value().map(o -> convert(o).intoInteger()).orElse(literal().size());
+            return value().map(o -> convert(o).intoInteger()).orElseGet(super::intoInteger);
         }
 
         @Override
         public long intoLong() {
-            return value().map(o -> convert(o).intoLong()).orElse((long) literal().size());
+            return value().map(o -> convert(o).intoLong()).orElseGet(super::intoLong);
         }
 
         @Override
         public double intoDouble() {
-            return value().map(o -> convert(o).intoDouble()).orElse((double) literal().size());
+            return value().map(o -> convert(o).intoDouble()).orElseGet(super::intoDouble);
         }
 
         @Override
         public BigDecimal intoDecimal() {
-            return value().map(o -> convert(o).intoDecimal()).orElse(new BigDecimal(literal().size()));
+            return value().map(o -> convert(o).intoDecimal()).orElseGet(super::intoDecimal);
         }
 
         @Override
@@ -252,44 +290,41 @@ public class Converter {
         }
     }
 
-    static class CollectionConverter extends TypeConverter<Collection<?>> {
+    static class IterableConverter extends TypeConverter<Iterable<?>> {
 
-        CollectionConverter(Object o) {
+        IterableConverter(Object o) {
             super(o);
         }
 
         private Optional<Object> onlyElement() {
-            return Optional.ofNullable(literal().size() == 1 ? literal().iterator().next() : null);
+            Iterator<?> iterator = literal().iterator();
+            return Optional.ofNullable(iterator.hasNext() ? iterator.next() : null)
+                .filter(o -> !iterator.hasNext());
         }
 
         @Override
         public String intoString() {
-            return onlyElement().map(o -> convert(o).intoString()).orElse(super.intoString());
-        }
-
-        @Override
-        public Object intoObject() {
-            return onlyElement().map(o -> convert(o).intoObject()).orElse(literal().size());
+            return onlyElement().map(o -> convert(o).intoString()).orElseGet(super::intoString);
         }
 
         @Override
         public int intoInteger() {
-            return onlyElement().map(o -> convert(o).intoInteger()).orElse(literal().size());
+            return onlyElement().map(o -> convert(o).intoInteger()).orElseGet(super::intoInteger);
         }
 
         @Override
         public long intoLong() {
-            return onlyElement().map(o -> convert(o).intoLong()).orElse((long) literal().size());
+            return onlyElement().map(o -> convert(o).intoLong()).orElseGet(super::intoLong);
         }
 
         @Override
         public double intoDouble() {
-            return onlyElement().map(o -> convert(o).intoDouble()).orElse((double) literal().size());
+            return onlyElement().map(o -> convert(o).intoDouble()).orElseGet(super::intoDouble);
         }
 
         @Override
         public BigDecimal intoDecimal() {
-            return onlyElement().map(o -> convert(o).intoDecimal()).orElse(new BigDecimal(literal().size()));
+            return onlyElement().map(o -> convert(o).intoDecimal()).orElseGet(super::intoDecimal);
         }
 
         @Override
@@ -303,7 +338,7 @@ public class Converter {
 
         @Override
         public List intoList() {
-            return new ArrayList<>(literal());
+            return stream(literal().spliterator(), false).collect(toCollection(ArrayList::new));
         }
     }
 
@@ -315,33 +350,27 @@ public class Converter {
 
         @Override
         public String intoString() {
-            return literal().map(o -> convert(o).intoString()).orElse(literal().toString());
-        }
-
-        @Override
-        public Object intoObject() {
-            if (literal().isPresent()) return literal().get();
-            else return literal();
+            return literal().map(o -> convert(o).intoString()).orElseGet(super::intoString);
         }
 
         @Override
         public int intoInteger() {
-            return literal().map(o -> convert(o).intoInteger()).orElse(0);
+            return literal().map(o -> convert(o).intoInteger()).orElseGet(super::intoInteger);
         }
 
         @Override
         public long intoLong() {
-            return literal().map(o -> convert(o).intoLong()).orElse(0l);
+            return literal().map(o -> convert(o).intoLong()).orElseGet(super::intoLong);
         }
 
         @Override
         public double intoDouble() {
-            return literal().map(o -> convert(o).intoDouble()).orElse(0d);
+            return literal().map(o -> convert(o).intoDouble()).orElseGet(super::intoDouble);
         }
 
         @Override
         public BigDecimal intoDecimal() {
-            return literal().map(o -> convert(o).intoDecimal()).orElse(new BigDecimal(0));
+            return literal().map(o -> convert(o).intoDecimal()).orElseGet(super::intoDecimal);
         }
 
         @Override

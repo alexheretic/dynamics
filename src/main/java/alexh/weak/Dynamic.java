@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
 
-public interface Dynamic extends Weak {
+public interface Dynamic extends Weak<Dynamic> {
 
     /** Default key value for top-level Dynamic instances */
     String ROOT_KEY = "root";
@@ -53,5 +53,5 @@ public interface Dynamic extends Weak {
      * Top-level Dynamic objects have the key value {@link Dynamic#ROOT_KEY}
      * @return key instance wrapper
      */
-    Weak key();
+    Weak<?> key();
 }

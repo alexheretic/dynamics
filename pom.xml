@@ -10,7 +10,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>alexh</groupId>
+      <groupId>com.github.alexheretic</groupId>
       <artifactId>fluent</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
