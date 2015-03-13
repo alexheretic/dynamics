@@ -217,7 +217,6 @@ public class DynamicBaseTest {
         Set<Dynamic> expected = Stream.of("key1", "key5", "key8", "key9").map(dy::get).collect(toSet());
 
         assertEquals(expected, dy.children().collect(toSet()));
-        assertEquals(expected, dy.childSet());
     }
 
     @Test

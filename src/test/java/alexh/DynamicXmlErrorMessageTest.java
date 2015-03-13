@@ -1,6 +1,7 @@
 package alexh;
 
 import alexh.weak.Dynamic;
+import alexh.weak.XmlDynamic;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.NoSuchElementException;
@@ -22,7 +23,7 @@ public class DynamicXmlErrorMessageTest {
 
     @Before
     public void setupMap() {
-        dy = Dynamic.fromXml(
+        dy = new XmlDynamic(
             "<msg>" +
               "<key1>" +
                 "<key2>hello</key2>" +

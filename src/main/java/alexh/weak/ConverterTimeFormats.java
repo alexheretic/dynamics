@@ -12,7 +12,8 @@ import java.util.function.Function;
 import static alexh.weak.Converter.convert;
 import static java.time.temporal.ChronoField.*;
 
-public class DynamicTimeFormats {
+/** Permissive {@link DateTimeFormatter}s used by {@link Converter} */
+public class ConverterTimeFormats {
 
     /** Parses ISO date-strings as permissively as possible */
     public static DateTimeFormatter ISO_PERMISSIVE = new DateTimeFormatterBuilder()
@@ -224,5 +225,5 @@ public class DynamicTimeFormats {
         return ALL_PARSER_WITH_DEFAULTS.apply(dateChars);
     }
 
-    private DynamicTimeFormats() {/* static */}
+    private ConverterTimeFormats() {/* static */}
 }

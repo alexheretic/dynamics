@@ -16,9 +16,23 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.StreamSupport.stream;
 
+/**
+ * Logic container for converting weakly typed objects into core types,
+ * ie
+ * {@code convert(1234.5678d).intoDecimal()} returns a {@link BigDecimal} of 1234.5678
+ *
+ * {@code convert(1234.5678d).intoInteger()} returns a rounded int of 1235
+ *
+ * {@code convert("2015-03").intoLocalDateTime()} returns a {@link LocalDateTime} of 2015-03-01T00:00:00.000
+ *
+ * {@code convert(Optional.of("8484")).intoDouble()} returns a double of 8484.0
+ *
+ * Supports conversions from most basic types, in addition to java.util.Date & java.time instances,
+ * object arrays, Iterables, Maps & Optionals + more from #toString conversions
+ */
 public class Converter {
 
-    private static final String VALUE_KEY = "value";
+    private static final String DEFAULT_MAP_KEY = "value";
 
     private static final Map<Class<?>, Function<Object, ? extends Converter>> typeConverters =
         unmodifiableMap(
@@ -36,16 +50,20 @@ public class Converter {
                 .append(Object.class, Converter::new)
         );
 
-    public static Converter convert(Object o) {
-        requireNonNull(o);
+    /**
+     * @param value some object to convert
+     * @return new Converter instance wrapper for the input value
+     */
+    public static Converter convert(Object value) {
+        requireNonNull(value);
 
-        if (o instanceof Object[])
-            return convert(asList((Object[]) o));
+        if (value instanceof Object[])
+            return convert(asList((Object[]) value));
 
-        return typeConverters.getOrDefault(o.getClass(), typeConverters.entrySet().stream()
-            .filter(entry -> entry.getKey().isInstance(o))
+        return typeConverters.getOrDefault(value.getClass(), typeConverters.entrySet().stream()
+            .filter(entry -> entry.getKey().isInstance(value))
             .findFirst()
-            .map(Map.Entry::getValue).get()).apply(o);
+            .map(Map.Entry::getValue).get()).apply(value);
     }
 
     private static boolean doesNotThrow(Supplier<?> method) {
@@ -56,66 +74,108 @@ public class Converter {
         catch (RuntimeException ex) { return false; }
     }
 
+    /** wrapped inner value, the conversion target */
     protected final Object o;
 
     Converter(Object o) {
         this.o = o;
     }
 
+    /**
+     * Converts the inner value into a String, should always work
+     * @return conversion
+     */
     public String intoString() {
-        return o.toString();
+        return o instanceof String ? (String) o : o.toString();
     }
 
+    /** @return {@link #intoString} will not throw an exception */
     public boolean intoStringWorks() {
         return doesNotThrow(this::intoString);
     }
 
+    /**
+     * @return conversion
+     * @throws java.lang.RuntimeException cannot be converted
+     */
     public int intoInteger() {
         return intoDecimal().setScale(0, RoundingMode.HALF_UP).intValueExact();
     }
 
+    /** @return {@link #intoInteger} will not throw an exception */
     public boolean intoIntegerWorks() {
         return doesNotThrow(this::intoInteger);
     }
 
+    /**
+     * @return conversion
+     * @throws java.lang.RuntimeException cannot be converted
+     */
     public long intoLong() {
         return intoDecimal().setScale(0, RoundingMode.HALF_UP).longValueExact();
     }
 
+    /** @return {@link #intoLong} will not throw an exception */
     public boolean intoLongWorks() {
         return doesNotThrow(this::intoLong);
     }
 
+    /**
+     * @return conversion
+     * @throws java.lang.RuntimeException cannot be converted
+     */
     public double intoDouble() {
         return intoDecimal().doubleValue();
     }
 
+    /** @return {@link #intoDouble} will not throw an exception */
     public boolean intoDoubleWorks() {
         return doesNotThrow(this::intoDouble);
     }
 
+    /**
+     * @return conversion
+     * @throws java.lang.RuntimeException cannot be converted
+     */
     public BigDecimal intoDecimal() {
         return new BigDecimal(intoString());
     }
 
+    /** @return {@link #intoDecimal} will not throw an exception */
     public boolean intoDecimalWorks() {
         return doesNotThrow(this::intoDecimal);
     }
 
+    /**
+     * Converts the inner value into a Map
+     * will convert an Iterable into an index -> value map
+     * will convert simple types into a size 1 map of {"value": ?}
+     * as such this should always work
+     * @return conversion
+     */
     public Map intoMap() {
-        return new Fluent.HashMap<>().append(VALUE_KEY, o);
+        return new Fluent.HashMap<>().append(DEFAULT_MAP_KEY, o);
     }
 
+    /** @return {@link #intoMap} will not throw an exception */
     public boolean intoMapWorks() {
         return doesNotThrow(this::intoMap);
     }
 
+    /**
+     * Converts the inner value into a List
+     * will convert a Map into a value list
+     * will convert simple types into a size 1 list [?]
+     * as such this should always work
+     * @return conversion
+     */
     public List intoList() {
         List list = new ArrayList();
         list.add(o);
         return list;
     }
 
+    /** @return {@link #intoList} will not throw an exception */
     public boolean intoListWorks() {
         return doesNotThrow(this::intoList);
     }
@@ -126,9 +186,10 @@ public class Converter {
      * @throws java.time.format.DateTimeParseException converted string is in an invalid format
      */
     public LocalDateTime intoLocalDateTime() {
-        return LocalDateTime.from(DynamicTimeFormats.parseWithDefaults(intoString()));
+        return LocalDateTime.from(ConverterTimeFormats.parseWithDefaults(intoString()));
     }
 
+    /** @return {@link #intoLocalDateTime} will not throw an exception */
     public boolean intoLocalDateTimeWorks() {
         return doesNotThrow(this::intoLocalDateTime);
     }
@@ -139,9 +200,10 @@ public class Converter {
      * @throws java.time.format.DateTimeParseException converted string is in an invalid format
      */
     public ZonedDateTime intoZonedDateTime() {
-        return ZonedDateTime.from(DynamicTimeFormats.parseWithDefaults(intoString()));
+        return ZonedDateTime.from(ConverterTimeFormats.parseWithDefaults(intoString()));
     }
 
+    /** @return {@link #intoZonedDateTime} will not throw an exception */
     public boolean intoZonedDateTimeWorks() {
         return doesNotThrow(this::intoZonedDateTime);
     }
@@ -260,7 +322,7 @@ public class Converter {
         }
 
         private Optional<Object> value() {
-            return Optional.ofNullable(literal().get(VALUE_KEY));
+            return Optional.ofNullable(literal().get(DEFAULT_MAP_KEY));
         }
 
         @Override

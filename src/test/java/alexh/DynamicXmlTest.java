@@ -1,6 +1,7 @@
 package alexh;
 
 import alexh.weak.Dynamic;
+import alexh.weak.XmlDynamic;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class DynamicXmlTest {
             XML_CONTENT_2 +
         "</xml>";
 
-    Dynamic root = Dynamic.fromXml(XML);
+    Dynamic root = new XmlDynamic(XML);
 
     @Test
     public void rootIsPresent() {
@@ -153,12 +154,12 @@ public class DynamicXmlTest {
 
     @Test
     public void equalsImplementation() {
-        assertEquals(root, Dynamic.fromXml(XML));
+        assertEquals(root, new XmlDynamic(XML));
     }
 
     @Test
     public void hashCodeImplementation() {
-        assertEquals(root.hashCode(), Dynamic.fromXml(XML).hashCode());
+        assertEquals(root.hashCode(), new XmlDynamic(XML).hashCode());
     }
 
     @Test
@@ -193,7 +194,7 @@ public class DynamicXmlTest {
 
     @Test
     public void constructors() {
-        assertThat(root, is(Dynamic.fromXml(new StringReader(XML))));
-        assertThat(root, is(Dynamic.fromXml(new InputSource(new StringReader(XML)))));
+        assertThat(root, is(new XmlDynamic(new StringReader(XML))));
+        assertThat(root, is(new XmlDynamic(new InputSource(new StringReader(XML)))));
     }
 }

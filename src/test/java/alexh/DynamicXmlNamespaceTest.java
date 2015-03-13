@@ -1,6 +1,7 @@
 package alexh;
 
 import alexh.weak.Dynamic;
+import alexh.weak.XmlDynamic;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -38,7 +39,7 @@ public class DynamicXmlNamespaceTest {
             "</three-and-two>" +
         "</xml>";
 
-    Dynamic root = Dynamic.fromXml(XML);
+    Dynamic root = new XmlDynamic(XML);
 
     @Test
     public void standardUsageIgnoresNamespaces() {
