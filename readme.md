@@ -47,7 +47,7 @@ With String keys we can fetch deeply in a single get call by splitting the strin
 message.get("product.investment.investment-2", ".").maybe()
     .map(investment2 -> investment2.as(BigDecimal.class)); // Optional[43213.44]
 ```
-#### Error Handling
+#### Error Describing
 
 Dynamic instances throw descriptive exceptions when data is missing, or not as selected.
 ```java
