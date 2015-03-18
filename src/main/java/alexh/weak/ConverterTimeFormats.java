@@ -208,7 +208,7 @@ public class ConverterTimeFormats {
     }
 
     /**
-     * Convenience method for permissive parsing using the {@link ALL_PARSER}
+     * Convenience method for permissive parsing using the {@link #ALL_PARSER}
      * @param dateChars date-string
      * @return parsed TemporalAccessor
      */
@@ -217,7 +217,7 @@ public class ConverterTimeFormats {
     }
 
     /**
-     * Convenience method for permissive parsing using the {@link ALL_PARSER_WITH_DEFAULTS}
+     * Convenience method for permissive parsing using the {@link #ALL_PARSER_WITH_DEFAULTS}
      * @param dateChars date-string
      * @return parsed TemporalAccessor
      */
