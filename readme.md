@@ -66,7 +66,7 @@ Converter.convert(1234.4321d).intoDecimal(); // BigDecimal 1234.4321
 Usage is also built into Dynamic instances.
 ```java
 message.get("product").get("effective").convert().intoLocalDateTime(); 
-// LocalDateTime of 2015-03-07T00:35:12
+// LocalDateTime of 2015-03-07T00:35:11
 ```
 
 ### XML Dynamics
