@@ -38,6 +38,32 @@ import static alexh.Unchecker.uncheckedGet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Dynamic implementation for XML documents
+ * All keys & values in an XmlDynamic unwrap to Strings, try {@link Dynamic#convert()}
+ * to implement basic string->type conversions
+ * <p>
+ * As an example consider the following XML structure stored in a String 'xmlMessage'
+ * <pre>{@code
+ *     <product>
+ *         <investment>
+ *             <info>
+ *                 <current>
+ *                     <name>some name</name>
+ *                 </current>
+ *             </info>
+ *         </investment>
+ *     </product>
+ * }</pre>
+ * We can select the nested 'name' element value with
+ * <br/>{@code new XmlDynamic(xmlMessage).get("product.investment.info.current.name", ".").asString()}
+ * <p>
+ * Also since XML has certain key name restrictions the pipe character '|' can be used as a splitter without declaration
+ * <br/>ie {@code new XmlDynamic(xmlMessage).get("product|investment|info|current|name").asString()}
+ * @see XmlDynamic#get(Object)
+ *
+ * @author Alex Butler
+ */
 public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, AvailabilityDescriber {
     
     private static final XPathExpression ALL = uncheckedGet(() -> XPathFactory.newInstance().newXPath().compile("//*"));
@@ -75,6 +101,43 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         return String.class.equals(type);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The pipe character '|' can be used as a splitter without declaration
+     * ie {@code xmlDynamic.get("product|investment|info|current|name").asString()}.
+     *
+     * Multiple child elements with the same local-name effectively have [i] appended to them where i is their
+     * index counting from top to bottom.
+     * For example:
+     * <pre>{@code
+     *     <product id="1234">
+     *         <string>hello</string>
+     *         <string>hey</string>
+     *         <string>hi</string>
+     *         <string>howdy</string>
+     *     </product>
+     * }</pre>
+     * <br/>{@code xmlDynamic.get("product|string")} returns "hello"
+     * <br/>{@code xmlDynamic.get("product|string[0]")} also returns "hello"
+     * <br/>{@code xmlDynamic.get("product|string[1]")} returns "hey"
+     * <br/>{@code xmlDynamic.get("product|string[2]")} returns "hi"
+     * <br/>{@code xmlDynamic.get("product|string[3]")} returns "howdy"
+     * <p>
+     * Attributes can be accessed in exactly the same way as elements, or explicitly
+     * <br/>{@code xmlDynamic.get("product|id").asString()} return "1234"
+     * <br/>{@code xmlDynamic.get("product|@id").asString()} also returns "1234"
+     * <p>
+     * Namespaces are ignored by default, but can be used explicitly using the "::" separator
+     * For example:
+     * <pre>{@code
+     *     <ex:product xmlns:ex="http://example.com/example">
+     *         <message>hello</message>
+     *     </ex:product>
+     * }</pre>
+     * <br/>{@code xmlDynamic.get("product|message")} returns "hello"
+     * <br/>{@code xmlDynamic.get("http://example.com/example::product|none::message")} also returns "hello"
+     */
     @Override
     public Dynamic get(Object keyObject) {
         final String keyToString = keyObject.toString();
@@ -220,7 +283,8 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         return serializer().writeToString(inner);
     }
 
-    protected String fullXml() {
+    /** @return this dynamic key->value entry as an XML string */
+    public String fullXml() {
         try { return serializer().writeToString(inner); }
         catch (RuntimeException ex) { return FALLBACK_TO_STRING; }
     }

@@ -20,6 +20,28 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * Wrapper allowing weakly-typed nested structure selection that's null-safe
+ *
+ * As an example consider a Map with the following structure called 'message'
+ * <pre>{@code
+ *    {
+ *      "product": {
+ *        "investment": {
+ *          "info": {
+ *            "current": {
+ *              "name": "some name"
+ *            }
+ *          }
+ *        }
+ *      }
+ *    }
+ * }</pre>
+ * We can select the nested 'name' field with
+ * {@code Dynamic.from(message).get("product.investment.info.current.name", ".").asString()}
+ *
+ * @author Alex Butler
+ */
 public interface Dynamic extends Weak<Dynamic> {
 
     /** Default key value for top-level Dynamic instances */
@@ -44,9 +66,9 @@ public interface Dynamic extends Weak<Dynamic> {
 
     /**
      * Returns a dynamic wrapping the immediate child of this instance with the input key,
-     * or a dynamic representing the lack of such a child
+     * or a dynamic representing the lack of such a child. This is never null.
      * @param key child key
-     * @return dynamic representing the child matching the input key
+     * @return dynamic representing the child matching the input key, or a dynamic representing the key's absence
      */
     Dynamic get(Object key);
 
@@ -54,9 +76,9 @@ public interface Dynamic extends Weak<Dynamic> {
     Stream<Dynamic> children();
 
     /**
-     * Performs multiple gets as described by an input key path
-     * so {@code dynamic.get("one").get("two").get("three")}
-     * is equivalent to {@code dynamic.get("one.two.three", ".")}
+     * Performs multiple String gets as described by an input key path
+     * so {@code dynamic.get("one.two.three", ".")}
+     * is equivalent to {@code dynamic.get("one").get("two").get("three")}
      * @param keyPath successive child keys separated by separator string
      * @param separator a string separator to split the input key input multiple keys
      * @return dynamic representing the nested child

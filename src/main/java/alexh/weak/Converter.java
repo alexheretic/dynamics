@@ -44,6 +44,8 @@ import static java.util.stream.StreamSupport.stream;
  *
  * Supports conversions from most basic types, in addition to java.util.Date & java.time instances,
  * object arrays, Iterables, Maps & Optionals + more from #toString conversions
+ *
+ * @author Alex Butler
  */
 public class Converter {
 

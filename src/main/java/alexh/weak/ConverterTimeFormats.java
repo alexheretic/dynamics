@@ -12,7 +12,11 @@ import java.util.function.Function;
 import static alexh.weak.Converter.convert;
 import static java.time.temporal.ChronoField.*;
 
-/** Permissive {@link DateTimeFormatter}s used by {@link Converter} */
+/**
+ * Permissive {@link DateTimeFormatter}s used by {@link Converter}
+ *
+ * @author Alex Butler
+ */
 public class ConverterTimeFormats {
 
     /** Parses ISO date-strings as permissively as possible */

@@ -7,7 +7,7 @@ Initially developed to help handle JSON and XML messages in Java servers without
 
 ### Weakly-Typed Nested Data Structure Handling
 
-An `alexh.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
+An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
 ```java
 /* represents JSON:
     {
@@ -58,7 +58,7 @@ message.get("product.holdings.foo.bar", ".").asObject(); // throws
 ```
 #### Type Conversion
 
-Aiding permissive reading (desired in servers consuming external messages) Dynamics provides common usage type runtime conversions with the `Converter` class.
+Aiding permissive reading (desired in servers consuming external messages) Dynamics provides common usage type runtime conversions with the `alexh.weak.Converter` class.
 ```java
 Converter.convert("1234.4321").intoDecimal(); // BigDecimal 1234.4321
 Converter.convert(1234.4321d).intoDecimal(); // BigDecimal 1234.4321

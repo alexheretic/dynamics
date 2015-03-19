@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** Wrapper for a weakly typed object or absence, providing casting, presence gathering & conversion methods */
+/**
+ * Wrapper for a weakly typed object or absence, providing casting, presence gathering & conversion methods
+ *
+ * @author Alex Butler
+ */
 public interface Weak<Self extends Weak<Self>> {
 
     /**
