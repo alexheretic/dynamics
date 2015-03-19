@@ -70,8 +70,50 @@ message.get("product").get("effective").convert().intoLocalDateTime();
 ```
 
 ### XML Dynamics
-todo add readme entry...
 
+XML documents can be wrapped in an `XmlDynamic` which acts like a string -> string map with some special features
+```xml
+<product>
+    <investment id="inv-1">
+        <info>
+            <current>
+                <name>some name</name>
+            </current>
+        </info>
+    </investment>
+    <investment id="inv-2" />
+</product>
+```
+We can select the nested 'name' element value just like a normal `Dynamic`
+```java
+Dynamic xml = new XmlDynamic(xmlMessage); // 'xmlMessage' is a string of the above xml
+xml.get("product.investment.info.current.name", ".").asString(); // "some name"
+```
+Also since XML has certain key name restrictions the pipe character '|' can be used as a splitter without declaration 
+```java
+xml.get("product|investment|info|current|name").asString(); // "some name"
+```
+Attributes can be accessed in exactly the same way as elements, or explicitly
+```java
+xml.get("product|investment|id").asString(); // "inv-1"
+xml.get("product|investment|@id").asString(); // "inv-1"
+```
+Multiple child elements with the same local-name effectively have [i] appended to them where i is their index
+```java
+xml.get("product|investment|id").asString(); // "inv-1"
+xml.get("product|investment[0]|id").asString(); // "inv-1"
+xml.get("product|investment[1]|id").asString(); // "inv-2"
+```
+Namespaces are ignored by default, but can be used explicitly using the "::" separator
+```xml
+<ex:product xmlns:ex="http://example.com/example">
+    <message>hello</message>
+</ex:product>
+```
+```java
+xmlWithNamespaces.get("product|message").asString(); // "hello"
+xmlWithNamespaces.get("http://example.com/example::product|none::message").asString(); // "hello"
+```
 <br/>
 
 Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licenses/LICENSE-2.0.html).
