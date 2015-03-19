@@ -111,8 +111,9 @@ Namespaces are ignored by default, but can be used explicitly using the "::" sep
 </ex:product>
 ```
 ```java
-xmlWithNamespaces.get("product|message").asString(); // "hello"
-xmlWithNamespaces.get("http://example.com/example::product|none::message").asString(); // "hello"
+xmlWithNamespaces.get("product|message").asString();
+xmlWithNamespaces.get("http://example.com/example::product|none::message").asString(); 
+// both return "hello"
 ```
 <br/>
 
