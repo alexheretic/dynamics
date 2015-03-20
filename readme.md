@@ -71,7 +71,7 @@ message.get("product").get("effective").convert().intoLocalDateTime();
 
 ### XML Dynamics
 
-XML documents can be wrapped in an `XmlDynamic` which acts like a string -> string map with some special features
+XML documents can be wrapped in an `XmlDynamic` which acts like a normal dynamic with string keys & values but with some special features
 ```xml
 <product>
     <investment id="inv-1">
