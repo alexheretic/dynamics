@@ -104,7 +104,7 @@ xml.get("product|investment|id").asString(); // "inv-1"
 xml.get("product|investment[0]|id").asString(); // "inv-1"
 xml.get("product|investment[1]|id").asString(); // "inv-2"
 ```
-Namespaces are ignored by default, but can be used explicitly using the "::" separator
+Namespaces are ignored by default, but can be used explicitly using the "::" key separator
 ```xml
 <ex:product xmlns:ex="http://example.com/example">
     <message>hello</message>
