@@ -61,7 +61,7 @@ message.get("product.holdings.foo.bar", ".").asObject(); // throws
 Aiding permissive reading (desired in servers consuming external messages) Dynamics provides common usage type runtime conversions with the `alexh.weak.Converter` class.
 ```java
 Converter.convert("1234.4321").intoDecimal(); // BigDecimal 1234.4321
-Converter.convert(1234.4321d).intoDecimal(); // BigDecimal 1234.4321
+Converter.convert(1234.4321d).intoDecimal(); // BigDecimal 1234.4321 (approx)
 ```
 Usage is also built into Dynamic instances.
 ```java
