@@ -30,8 +30,8 @@ Each 'get' call returns a non-null Dynamic instance that represents the child wi
 
 ```java
 Dynamic investment1 = message.get("product").get("investment").get("investment-1");
-if (investment1.isPresent())
-    investment1.as(BigDecimal.class); // 12345.33
+investment1.isPresent(); // true
+investment1.as(BigDecimal.class); // 12345.33, assuming it is a BigDecimal
 ```
 
 This allows a single call to `isPresent()` to indicate if the required value exists.
