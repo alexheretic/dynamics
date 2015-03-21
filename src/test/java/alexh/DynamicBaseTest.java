@@ -220,6 +220,11 @@ public class DynamicBaseTest {
     }
 
     @Test
+    public void absenceHasNoChildren() {
+        assertThat(dy.get("element that doesn't exist").children().count(), is(0l));
+    }
+
+    @Test
     public void providesConverterInstanceMethod() {
         assertThat(dy.get("key1.key3.key4", ".").convert().intoString(), is("123"));
     }

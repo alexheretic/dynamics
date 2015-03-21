@@ -35,7 +35,7 @@ public interface Weak<Self extends Weak<Self>> {
     /**
      * Returns inner value implicitly asserting that the value is not absent, ie {@link Weak#isPresent()} is true
      * @return unwrapped inner value
-     * @throws todo absent
+     * @throws java.util.NoSuchElementException absent
      */
     Object asObject();
 
@@ -52,8 +52,7 @@ public interface Weak<Self extends Weak<Self>> {
      * @param type cast type
      * @param <T> cast type
      * @return unwrapped inner value cast to input type
-     * @throws todo cast error
-     * @throws todo cast error
+     * @throws ClassCastException
      */
     default <T> T as(Class<T> type) {
         return type.cast(asObject());
@@ -119,7 +118,7 @@ public interface Weak<Self extends Weak<Self>> {
      * Shortcut for wrapping {@link Weak#asObject()} in a {@link Converter} instance
      * @see Converter#convert(Object)
      * @return {@link Converter} instance for inner value
-     * @throws todo absent
+     * @throws java.util.NoSuchElementException absent
      */
     default Converter convert() {
         return Converter.convert(asObject());
