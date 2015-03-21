@@ -6,7 +6,7 @@
 
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Java library for handling nested dynamic data</description>
