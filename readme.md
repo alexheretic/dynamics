@@ -9,8 +9,7 @@ Initially developed to help handle JSON and XML messages in Java servers without
 
 An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
 ```java
-/*
-    {
+/*  {
       "product": {
         "investment": {
           "investment-1": 12345.33,
@@ -19,8 +18,7 @@ An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that
         "id": "RR1209478",
         "effective": "2015-03-07T00:35:11"
       }
-    }
- */
+    } */
 Map json; // map of the above nested structure
 
 Dynamic message = Dynamic.from(json);
