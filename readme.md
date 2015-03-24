@@ -6,22 +6,23 @@ Dynamics is a Java library for handling nested weakly-typed data
 Initially developed to help handle JSON and XML messages in Java servers without tedious and repetitive null checking, type conversion & casting
 
 ### Weakly-Typed Nested Data Structure Handling
+```json
+{
+  "product": {
+    "investment": {
+      "investment-1": 12345.33,
+      "investment-2": 43213.44
+    },
+    "id": "RR1209478",
+    "effective": "2015-03-07T00:35:11"
+  }
+} 
+```
 
 An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
-```java
-/*  {
-      "product": {
-        "investment": {
-          "investment-1": 12345.33,
-          "investment-2": 43213.44
-        },
-        "id": "RR1209478",
-        "effective": "2015-03-07T00:35:11"
-      }
-    } */
-Map json; // map of the above nested structure
 
-Dynamic message = Dynamic.from(json);
+```java
+Dynamic message = Dynamic.from(jsonMap); // 'jsonMap' is a Map of the above JSON data
 ```
 
 Each 'get' call returns a non-null Dynamic instance that represents the child with that key, or the key's absence. Finally the wrapped object target can be accessed with `asObject()`, or `as(Class)` to cast.
@@ -72,14 +73,14 @@ message.get("product").get("effective").convert().intoLocalDateTime();
 XML documents can be wrapped in an `XmlDynamic` which acts like a normal dynamic with string keys & values but with some special features
 ```xml
 <product>
-    <investment id="inv-1">
-        <info>
-            <current>
-                <name>some name</name>
-            </current>
-        </info>
-    </investment>
-    <investment id="inv-2" />
+  <investment id="inv-1">
+    <info>
+      <current>
+        <name>some name</name>
+      </current>
+    </info>
+  </investment>
+  <investment id="inv-2" />
 </product>
 ```
 We can select the nested 'name' element value just like a normal `Dynamic`
@@ -105,7 +106,7 @@ xml.get("product|investment[1]|id").asString(); // "inv-2"
 Namespaces are ignored by default, but can be used explicitly using the "::" key separator
 ```xml
 <ex:product xmlns:ex="http://example.com/example">
-    <message>hello</message>
+  <message>hello</message>
 </ex:product>
 ```
 ```java
