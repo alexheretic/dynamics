@@ -84,7 +84,7 @@ public class ConverterTest {
             .expect(Converter::intoDouble, 1425688985487d)
             .expect(Converter::intoDecimal, new BigDecimal(1425688985487l))
             .expect(Converter::intoLocalDateTime, LocalDateTime
-                .ofInstant(Instant.ofEpochMilli(1425688985487l), ZoneId.systemDefault()))
+                .ofInstant(Instant.ofEpochMilli(1425688985487l), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -114,7 +114,7 @@ public class ConverterTest {
             .expect(Converter::intoDouble, 123451123412341231.67132123121234761239847612938743123899d)
             .expect(Converter::intoDecimal, new BigDecimal("123451123412341231.6713212312123476123984761293874312389"))
             .expect(Converter::intoLocalDateTime, LocalDateTime
-                .ofInstant(Instant.ofEpochMilli(123451123412341232l), ZoneId.systemDefault()))
+                .ofInstant(Instant.ofEpochMilli(123451123412341232l), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -136,17 +136,17 @@ public class ConverterTest {
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
 
         test("2015-03-07T00:37:41.946")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.systemDefault()), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
 
         test("2015-03-07T00:3")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.systemDefault()), ZonedDateTime.parse("2015-03-07T00:03:00.000Z[Europe/London]"))
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:03:00.000Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:03:00.000"));
 
         test("2015-03-07")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.systemDefault()), ZonedDateTime.parse("2015-03-07T00:00:00.000Z[Europe/London]"))
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:00:00.000Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:00:00.000"));
 
@@ -159,6 +159,34 @@ public class ConverterTest {
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-01-01T00:00:00.000Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-01-01T00:00:00.000"));
+    }
+
+    @Test
+    public void noColonTimezone() {
+        test("2015-03-07T00:37:41.946+0100")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-06T23:37:41.946Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946+01:00"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41.946-0530")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T06:07:41.946Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T06:07:41.946Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41.946+0000")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41.946+00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41.946-10")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T10:37:41.946Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T10:37:41.946Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
     }
 
     @Test
@@ -286,7 +314,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 59839))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -300,7 +328,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "123412344444")
             .expect(Converter::intoList, singletonList(123412344444l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 123412344444l))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -330,7 +358,7 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDouble))
             .expect(Converter::intoList, singletonList(someDouble))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDouble))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -375,7 +403,7 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDecimal))
             .expect(Converter::intoList, singletonList(someDecimal))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDecimal))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -418,7 +446,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(0, 59839))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -509,7 +537,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "12341234")
             .expect(Converter::intoList, singletonList(12341234))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 12341234))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341234), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341234), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -559,7 +587,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "1234123412341234")
             .expect(Converter::intoList, singletonList(1234123412341234l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 1234123412341234l))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.systemDefault()))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.of("Europe/London")))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 

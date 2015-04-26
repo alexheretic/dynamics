@@ -17,6 +17,7 @@ package alexh.weak;
 
 import java.util.LinkedList;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
 
@@ -33,13 +34,10 @@ class DynamicChildLogic {
     }
 
     public LinkedList<Object> getAscendingKeyChainWithRoot() {
-        LinkedList<Object> ascendingKeys = getAscendingChainAllWith(dc -> true).stream()
-            .map(child -> {
-                return child.key().asObject();
-            })
+        LinkedList<DynamicChild> ascending = getAscendingChainAllWith(dc -> true);
+        return Stream.concat(Stream.of(ascending.getFirst().parent()), ascending.stream())
+            .map(child -> child.key().asObject())
             .collect(toCollection(LinkedList::new));
-        ascendingKeys.addFirst(Dynamic.ROOT_KEY);
-        return ascendingKeys;
     }
 
     public LinkedList<DynamicChild> getAscendingChainAllWith(Predicate<DynamicChild> pd) {

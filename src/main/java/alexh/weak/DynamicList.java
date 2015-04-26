@@ -75,7 +75,12 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
 
     @Override
     public String describeAvailability() {
-        return inner.isEmpty() ? "[]" : format("[0..%d]", inner.size()-1);
+        switch(inner.size()) {
+            case 0: return "[]";
+            case 1: return "[0]";
+            case 2: return "[0, 1]";
+            default: return format("[0..%d]", inner.size()-1);
+        }
     }
 
     @Override

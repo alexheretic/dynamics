@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -74,6 +76,27 @@ public class DynamicListTest {
     public void toStringImplementation() {
         assertThat(dy.toString(), allOf(containsString("root"), containsString("0..3")));
         System.out.println("list dynamic toString: "+ dy);
+    }
+
+    @Test
+    public void toStringImplementationSize0() {
+        Dynamic dynamic = Dynamic.from(emptyList());
+        assertThat(dynamic.toString(), containsString("[]"));
+        System.out.println("list dynamic toString: "+ dynamic);
+    }
+
+    @Test
+    public void toStringImplementationSize1() {
+        Dynamic dynamic = Dynamic.from(singletonList("foo"));
+        assertThat(dynamic.toString(), containsString("[0]"));
+        System.out.println("list dynamic toString: "+ dynamic);
+    }
+
+    @Test
+    public void toStringImplementationSize2() {
+        Dynamic dynamic = Dynamic.from(asList("foo", "bar"));
+        assertThat(dynamic.toString(), containsString("[0, 1]"));
+        System.out.println("list dynamic toString: "+ dynamic);
     }
 
     @Test

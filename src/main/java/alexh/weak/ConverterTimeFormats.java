@@ -35,8 +35,9 @@ public class ConverterTimeFormats {
         .appendLiteral(':').appendValue(SECOND_OF_MINUTE, 1, 2, SignStyle.NOT_NEGATIVE)
         .optionalStart()
         .appendFraction(NANO_OF_SECOND, 0, 9, true).parseDefaulting(NANO_OF_SECOND, 0)
-        .optionalStart()
-        .appendOffsetId()
+        .optionalStart().appendZoneOrOffsetId().optionalEnd()
+        .optionalStart().appendOffset("+HHmm", "+0000").optionalEnd()
+
         .optionalStart()
         .appendLiteral('[').parseCaseSensitive().appendZoneRegionId().appendLiteral(']')
         .toFormatter();
