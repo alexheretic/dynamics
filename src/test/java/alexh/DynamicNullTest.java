@@ -35,7 +35,12 @@ public class DynamicNullTest {
     @Test
     public void toStringImplementation() {
         assertThat(Dynamic.from(null).toString(), allOf(containsString("root"), containsString("null")));
-        System.out.println("null dynamic toString: "+ Dynamic.from(null));
+        System.out.println("null dynamic toString: " + Dynamic.from(null));
+    }
+
+    @Test
+    public void noChildren() {
+        assertFalse(Dynamic.from(null).children().findAny().isPresent());
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 
 public class LiteJoinerTest {
@@ -17,8 +18,6 @@ public class LiteJoinerTest {
 
     @Test
     public void none() {
-        final String separator = "-";
-        final Iterable<?> parts = asList();
-        assertEquals("", LiteJoiner.on(separator).join(parts));
+        assertEquals("", LiteJoiner.on("-").join(emptyList()));
     }
 }
