@@ -7,7 +7,13 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 import java.io.StringReader;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -196,5 +202,33 @@ public class DynamicXmlTest {
     public void constructors() {
         assertThat(root, is(new XmlDynamic(new StringReader(XML))));
         assertThat(root, is(new XmlDynamic(new InputSource(new StringReader(XML)))));
+    }
+
+    @Test
+    public void shouldBeThreadSafe() {
+//        IntStream.range(0, 1000).forEach(i -> {
+            final ExecutorService exe = Executors.newCachedThreadPool();
+            final int threads = 100;
+            try {
+                List<CompletableFuture<?>> results = IntStream.range(0, threads)
+                    .mapToObj(j -> CompletableFuture.supplyAsync(() -> {
+                        try {
+                            return new XmlDynamic(XML);
+                        }
+                        catch (RuntimeException ex) {
+                            ex.printStackTrace();
+                            throw ex;
+                        }
+                    }, exe))
+                    .collect(toList());
+
+                long errorCount = results.stream()
+                    .filter(result -> result.isCompletedExceptionally())
+                    .count();
+
+                assertTrue(errorCount + " call(s) were exceptional", errorCount == 0);
+            }
+            finally { exe.shutdown(); }
+//        });
     }
 }

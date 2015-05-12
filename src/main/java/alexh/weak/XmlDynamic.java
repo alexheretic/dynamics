@@ -65,12 +65,11 @@ import static java.util.stream.Collectors.toList;
  * @author Alex Butler
  */
 public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, AvailabilityDescriber {
-    
-    private static final XPathExpression ALL = uncheckedGet(() -> XPathFactory.newInstance().newXPath().compile("//*"));
+
     private static final String FALLBACK_TO_STRING = "Xml[unable to serialize]";
     private static final String NONE_NAMESPACE = "none";
     private static final String NS_INDICATOR = "::";
-    
+
     private static Stream<Node> stream(NodeList nodes) {
         return IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
     }
@@ -79,12 +78,19 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         return IntStream.range(0, nodeMap.getLength()).mapToObj(nodeMap::item);
     }
 
+    private static Node inputSourceToNode(InputSource xml) {
+        final XPathExpression all = uncheckedGet(() -> XPathFactory.newInstance().newXPath().compile("//*"));
+        synchronized (XPathExpression.class) { // evaluate not thread-safe
+            return uncheckedGet(() -> (Node) all.evaluate(xml, XPathConstants.NODE));
+        }
+    }
+
     public XmlDynamic(Node inner) {
         super(inner);
     }
 
     public XmlDynamic(InputSource xml) {
-        this(uncheckedGet(() -> (Node) ALL.evaluate(xml, XPathConstants.NODE)));
+        this(inputSourceToNode(xml));
     }
 
     public XmlDynamic(Reader xml) {
