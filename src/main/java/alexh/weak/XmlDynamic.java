@@ -71,10 +71,12 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     private static final String NS_INDICATOR = "::";
 
     private static Stream<Node> stream(NodeList nodes) {
+        if (nodes == null) return Stream.empty();
         return IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
     }
 
     private static Stream<Node> stream(NamedNodeMap nodeMap) {
+        if (nodes == null) return Stream.empty();
         return IntStream.range(0, nodeMap.getLength()).mapToObj(nodeMap::item);
     }
 
