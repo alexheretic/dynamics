@@ -1,5 +1,10 @@
 package alexh;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
 import org.custommonkey.xmlunit.Diff;
@@ -12,11 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
-import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 
 public class DynamicXmlTest {
 
@@ -230,5 +230,16 @@ public class DynamicXmlTest {
             }
             finally { exe.shutdown(); }
 //        });
+    }
+
+    @Test
+    public void shouldProvideNameFilterPredicateGenerator() {
+        List<String> els = root.get("xml|content_1")
+            .children()
+            .filter(XmlDynamic.hasElementName("multi_empty_element"))
+            .map(el -> el.key().asString())
+            .collect(toList());
+
+        assertThat(els, is(asList("multi_empty_element", "multi_empty_element[1]", "multi_empty_element[2]")));
     }
 }

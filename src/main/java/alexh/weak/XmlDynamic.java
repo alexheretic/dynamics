@@ -15,6 +15,9 @@
  */
 package alexh.weak;
 
+import static alexh.Unchecker.uncheckedGet;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -33,10 +36,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static alexh.Unchecker.uncheckedGet;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Dynamic implementation for XML documents
@@ -70,13 +69,13 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     private static final String NONE_NAMESPACE = "none";
     private static final String NS_INDICATOR = "::";
 
-    private static Stream<Node> stream(NodeList nodes) {
+    private static Stream<Node> stream(/*nullable*/ NodeList nodes) {
         if (nodes == null) return Stream.empty();
         return IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
     }
 
-    private static Stream<Node> stream(NamedNodeMap nodeMap) {
-        if (nodes == null) return Stream.empty();
+    private static Stream<Node> stream(/*nullable*/ NamedNodeMap nodeMap) {
+        if (nodeMap == null) return Stream.empty();
         return IntStream.range(0, nodeMap.getLength()).mapToObj(nodeMap::item);
     }
 
@@ -85,6 +84,33 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
         synchronized (XPathExpression.class) { // evaluate not thread-safe
             return uncheckedGet(() -> (Node) all.evaluate(xml, XPathConstants.NODE));
         }
+    }
+
+    /**
+     * Predicate for an xml element's name as it appears in the xml itself (case insensitive)
+     * Inside the xml dynamic multiple elements with the same names have unique suffices ie
+     * <root>
+     *     <child>1</child>
+     *     <child>2</child>
+     * </root>
+     * the 'child' elements have internal names 'child' and 'child[1]' a predicate
+     * {@code dynamic -> dynamic.key().asString().equals("child")} would only match the first
+     *
+     * {@code hasElementName("child")} matches both
+     *
+     * @param elementName xml element name
+     * @return predicate to match XmlDynamic instances of elements with input name
+     */
+    public static Predicate<? super Dynamic> hasElementName(String elementName) {
+        return element -> {
+            if (!(element instanceof XmlDynamic)) return false;
+
+            String key = element.key().asString();
+            if (key.endsWith("]"))
+                key = key.substring(0, key.lastIndexOf("["));
+
+            return key.equalsIgnoreCase(elementName);
+        };
     }
 
     public XmlDynamic(Node inner) {
