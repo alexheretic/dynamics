@@ -40,7 +40,7 @@ message.get("product").get("one").get("two").get("three").get("four").isPresent(
 
 ```
 
-With String keys we can fetch deeply in a single get call by splitting the string into multiple gets and supplying a splitter string. In addition to `isPresent()` method a Dynamic my be unpacked into an Optional with `asOptional()` or can be wrapped into an `Optional<Dynamic>` with `maybe()`
+With String keys we can fetch deeply in a single get call by splitting the string into multiple gets and supplying a splitter string. In addition to `isPresent()` method a Dynamic my be unpacked into an Optional with `asOptional()` or can be wrapped into an `OptionalWeak` and handled fluently with `maybe()`
 
 ```java
 message.get("product.investment.investment-2", ".").maybe().as(BigDecimal.class); 
