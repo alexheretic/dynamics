@@ -91,6 +91,16 @@ public interface Dynamic extends Weak<Dynamic> {
     }
 
     /**
+     * Shortcut for {@code dynamic.get("some.path.to.somewhere", ".")} avoiding the need for the second argument
+     * Warning this should be considered beta, I'm not sure this is the best API approach
+     * @param dotSeparatedPath successive child keys separated by "." character
+     * @return dynamic representing the nested child
+     */
+    default Dynamic dget(String dotSeparatedPath) {
+        return get(dotSeparatedPath, ".");
+    }
+
+    /**
      * Returns Weak instance wrapping the key for this node. To get the inner key call {@link Weak#asObject()}
      * Top-level Dynamic objects have the key value {@link Dynamic#ROOT_KEY}
      * @return key instance wrapper

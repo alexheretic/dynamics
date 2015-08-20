@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class GetSplittingTest {
@@ -58,7 +59,7 @@ public class GetSplittingTest {
 
     @Test
     public void absentPath() {
-        assertFalse("Unexpected: "+ dy.get("foo.bar.blah.blah", "."), dy.get("foo.bar.blah.blah", ".").isPresent());
+        assertFalse("Unexpected: " + dy.get("foo.bar.blah.blah", "."), dy.get("foo.bar.blah.blah", ".").isPresent());
     }
 
     @Test
@@ -69,5 +70,10 @@ public class GetSplittingTest {
     @Test
     public void unusedSplitter_present() {
         assertTrue(dy.get("key5", ".").isPresent());
+    }
+
+    @Test
+    public void dgetConvenienceMethod() {
+        assertThat(dy.dget("key5.3.55").asObject(), is("blah"));
     }
 }
