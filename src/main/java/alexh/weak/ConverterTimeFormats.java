@@ -153,7 +153,21 @@ public class ConverterTimeFormats {
             .appendLiteral(':').appendPattern("ss")
             .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).optionalEnd()
         .optionalEnd()
-        .optionalStart().appendLiteral(' ').appendPattern("zzz").optionalEnd()
+        .appendLiteral(' ').appendPattern("zzz")
+        .appendLiteral(' ').appendPattern("yyyy")
+        .toFormatter();
+
+    public static DateTimeFormatter UTIL_DATE_WITHOUT_ZONE_TO_STRING = new DateTimeFormatterBuilder()
+        .parseLenient()
+        .appendPattern("EEE")
+        .appendLiteral(' ').appendPattern("MMM")
+        .appendLiteral(' ').appendValue(DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+        .appendLiteral(' ').appendValue(HOUR_OF_DAY, 1, 2, SignStyle.NOT_NEGATIVE)
+        .appendLiteral(':').appendPattern("mm")
+        .optionalStart()
+        .appendLiteral(':').appendPattern("ss")
+        .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).optionalEnd()
+        .optionalEnd()
         .appendLiteral(' ').appendPattern("yyyy")
         .toFormatter();
 
@@ -175,6 +189,7 @@ public class ConverterTimeFormats {
         DAY_MONTH_YEAR_PERMISSIVE_DASH::parse,
         DAY_MONTH_YEAR_PERMISSIVE_SLASH::parse,
         UTIL_DATE_TO_STRING::parse,
+        UTIL_DATE_WITHOUT_ZONE_TO_STRING::parse,
         ISO_LONESOME_YEAR::parse,
         EPOCH_MILLIS_PARSER);
 
@@ -188,6 +203,7 @@ public class ConverterTimeFormats {
         DAY_MONTH_YEAR_PERMISSIVE_DASH_WITH_DEFAULTS::parse,
         DAY_MONTH_YEAR_PERMISSIVE_SLASH_WITH_DEFAULTS::parse,
         UTIL_DATE_TO_STRING::parse,
+        UTIL_DATE_WITHOUT_ZONE_TO_STRING::parse,
         ISO_LONESOME_YEAR_WITH_DEFAULTS::parse,
         EPOCH_MILLIS_PARSER);
 

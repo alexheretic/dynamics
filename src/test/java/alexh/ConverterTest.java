@@ -1,6 +1,7 @@
 package alexh;
 
 import alexh.weak.Converter;
+import alexh.weak.ConverterMaybe;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -65,6 +66,21 @@ public class ConverterTest {
             .throwsWhen(Converter::intoDecimal)
             .throwsWhen(Converter::intoLocalDateTime)
             .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void aStringMaybe() {
+        test("hello world")
+            .expect(ConverterMaybe::intoString, Optional.of("hello world"))
+            .expect(ConverterMaybe::intoMap, Optional.of(singletonMap(EXPECTED_DEFAULT_MAP_KEY, "hello world")))
+            .expect(ConverterMaybe::intoList, Optional.of(asList("hello world")))
+            .emptyWhen(ConverterMaybe::intoInteger)
+            .emptyWhen(ConverterMaybe::intoLong)
+            .emptyWhen(ConverterMaybe::intoDouble)
+            .emptyWhen(ConverterMaybe::intoDecimal)
+            .emptyWhen(ConverterMaybe::intoLocalDateTime)
+            .emptyWhen(ConverterMaybe::intoZonedDateTime)
+            .emptyWhen(c -> c.intoZonedDateTimeOrUse(ZoneId.systemDefault()));
     }
 
     @Test
@@ -636,6 +652,16 @@ public class ConverterTest {
 
         <T> Tester expect(Function<Converter, T> method, T expected) {
             testables.forEach(o -> assertThat(method.apply(convert(o)), is(expected)));
+            return this;
+        }
+
+        <T> Tester expect(Function<ConverterMaybe, Optional<T>> method, Optional<T> expected) {
+            testables.forEach(o -> assertThat(method.apply(convert(o).maybe()), is(expected)));
+            return this;
+        }
+
+        <T> Tester emptyWhen(Function<ConverterMaybe, Optional<T>> method) {
+            testables.forEach(o -> assertThat(method.apply(convert(o).maybe()), is(Optional.empty())));
             return this;
         }
 

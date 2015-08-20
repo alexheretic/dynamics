@@ -43,8 +43,8 @@ message.get("product").get("one").get("two").get("three").get("four").isPresent(
 With String keys we can fetch deeply in a single get call by splitting the string into multiple gets and supplying a splitter string. In addition to `isPresent()` method a Dynamic my be unpacked into an Optional with `asOptional()` or can be wrapped into an `Optional<Dynamic>` with `maybe()`
 
 ```java
-message.get("product.investment.investment-2", ".").maybe()
-    .map(investment2 -> investment2.as(BigDecimal.class)); // Optional[43213.44]
+message.get("product.investment.investment-2", ".").maybe().as(BigDecimal.class); 
+// Optional[43213.44]
 ```
 #### Error Describing
 
@@ -66,6 +66,8 @@ Usage is also built into Dynamic instances.
 ```java
 message.get("product").get("effective").convert().intoLocalDateTime(); 
 // LocalDateTime of 2015-03-07T00:35:11
+message.get("product").get("effective").maybe().convert().intoLocalDateTime(); 
+// Optional<LocalDateTime>[2015-03-07T00:35:11]
 ```
 
 ### XML Dynamics
@@ -120,7 +122,7 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-1.1 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+1.2 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>

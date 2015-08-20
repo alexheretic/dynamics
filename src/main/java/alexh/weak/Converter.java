@@ -58,12 +58,13 @@ public class Converter {
                 .append(Long.class, LongConverter::new)
                 .append(Double.class, DoubleConverter::new)
                 .append(BigDecimal.class, DecimalConverter::new)
-                .append(Dynamic.class, o -> convert(((Dynamic) o).asObject()))
+                .append(Weak.class, o -> convert(((Weak) o).asObject()))
+                .append(OptionalWeak.class, o -> new OptionalConverter(((OptionalWeak) o).asObject()))
                 .append(Map.class, MapConverter::new)
                 .append(Iterable.class, IterableConverter::new)
                 .append(Optional.class, OptionalConverter::new)
                 .append(java.util.Date.class, UtilDateInstantConverter::new)
-                // fallback
+                    // fallback
                 .append(Object.class, Converter::new)
         );
 
@@ -234,6 +235,11 @@ public class Converter {
     public ZonedDateTime intoZonedDateTimeOrUse(ZoneId fallback){
         try { return intoZonedDateTime(); }
         catch (RuntimeException ex) { return intoLocalDateTime().atZone(fallback); }
+    }
+
+    /** @return ConverterMaybe instance, for fluent handling of non-convertibles  */
+    public ConverterMaybe maybe() {
+        return new ConverterMaybe(o);
     }
 
     static abstract class TypeConverter<T> extends Converter {

@@ -129,7 +129,7 @@ public interface Weak<Self extends Weak<Self>> {
      * {@link Optional#isPresent} return consistent with {@link Weak#isPresent()}
      * @return optional wrapping of this, or empty if this is absent
      */
-    default Optional<Self> maybe() {
-        return isPresent() ? Optional.of((Self) this) : Optional.empty();
+    default OptionalWeak<Self> maybe() {
+        return isPresent() ? OptionalWeak.of((Self) this) : OptionalWeak.empty();
     }
 }
