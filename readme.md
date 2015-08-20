@@ -128,6 +128,6 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
 </dependency>
 ```
