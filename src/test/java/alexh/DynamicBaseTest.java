@@ -35,6 +35,7 @@ public class DynamicBaseTest {
             .append("key5", asList(1, 2, 3, 4))
             .append("key8", emptyList())
             .append("key9", asList("hello", null, null, null))
+            .append("key10", new HashSet<>(asList("hi", "howdy")))
         );
 
         assertNotNull(dy);
@@ -214,7 +215,7 @@ public class DynamicBaseTest {
 
     @Test
     public void getAllAvailableChildren() {
-        Set<Dynamic> expected = Stream.of("key1", "key5", "key8", "key9").map(dy::get).collect(toSet());
+        Set<Dynamic> expected = Stream.of("key1", "key5", "key8", "key9", "key10").map(dy::get).collect(toSet());
 
         assertEquals(expected, dy.children().collect(toSet()));
     }
@@ -227,5 +228,12 @@ public class DynamicBaseTest {
     @Test
     public void providesConverterInstanceMethod() {
         assertThat(dy.get("key1.key3.key4", ".").convert().intoString(), is("123"));
+    }
+
+    @Test
+    public void dynamicFromSetReturnsAvailableChildren() {
+        assertThat(dy.get("key10").get(0).convert().intoString(), is("hi"));
+        assertThat(dy.get("key10").get(1).convert().intoString(), is("howdy"));
+        assertThat(dy.get("key10").children().count(), is(2L));
     }
 }
