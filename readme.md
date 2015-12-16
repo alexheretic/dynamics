@@ -131,3 +131,9 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
   <version>2.0</version>
 </dependency>
 ```
+
+### Changelog
+
+2.0
+ - Collection instance support
+ - Minor format change to error messages
