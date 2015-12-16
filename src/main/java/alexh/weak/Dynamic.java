@@ -15,6 +15,7 @@
  */
 package alexh.weak;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -48,7 +49,7 @@ public interface Dynamic extends Weak<Dynamic> {
     String ROOT_KEY = "root";
 
     /**
-     * Wraps a value in a dynamic representation, properly handled nested types are Maps & Lists all other types
+     * Wraps a value in a dynamic representation, properly handled nested types are Maps & Collections all other types
      * become dynamic end-points. In the general case you simply have to convert to one of these to be handled as a
      * nested dynamic object
      * See {@link Converter} to perform simple conversions to these types where applicable
@@ -61,6 +62,7 @@ public interface Dynamic extends Weak<Dynamic> {
         else if (val instanceof Dynamic) return (Dynamic) val;
         else if (val instanceof Map) return new DynamicMap((Map) val);
         else if (val instanceof List) return new DynamicList((List) val);
+        else if (val instanceof Collection) return new DynamicCollection((Collection) val);
         else return new DynamicSomething(val);
     }
 

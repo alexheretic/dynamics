@@ -1,15 +1,14 @@
 package alexh;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.NoSuchElementException;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 public class DynamicXmlErrorMessageTest {
 
@@ -87,7 +86,7 @@ public class DynamicXmlErrorMessageTest {
         assertThat("Should contain the key name", message, containsString("'key7'"));
         assertThat("Should describe key as a premature end", message.toLowerCase(), containsString("premature end"));
         assertThat("Should describe the key location", message, containsString("key1->key3->*key7*->key8"));
-        assertThat("Should describe the emptiness", message.toLowerCase(), containsString("empty xml"));
+        assertThat("Should describe the emptiness", message.toLowerCase(), containsString("empty-xml"));
         System.out.println(message);
     }
 

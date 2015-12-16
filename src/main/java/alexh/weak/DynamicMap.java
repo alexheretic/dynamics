@@ -15,13 +15,12 @@
  */
 package alexh.weak;
 
+import static alexh.weak.DynamicChildLogic.using;
 import alexh.LiteJoiner;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static alexh.weak.DynamicChildLogic.using;
-
-class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDescriber, AvailabilityDescriber {
+class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, Describer {
 
     public DynamicMap(Map<?, ?> inner) {
         super(inner);
@@ -57,13 +56,9 @@ class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDesc
     }
 
     @Override
-    public String describeType() {
-        return "Map";
-    }
-
-    @Override
-    public String describeAvailability() {
-        return inner.keySet().toString();
+    public String describe() {
+        if (inner.isEmpty()) return "Empty-Map";
+        return "Map" + inner.keySet().toString();
     }
 
     @Override
@@ -73,7 +68,7 @@ class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDesc
 
     @Override
     public String toString() {
-        return keyLiteral() + ":"+ describeType() + describeAvailability();
+        return keyLiteral() + ":"+ describe();
     }
 
     static class Child extends DynamicMap implements DynamicChild {
@@ -99,8 +94,7 @@ class DynamicMap extends AbstractDynamic<Map<?, ?>> implements Dynamic, TypeDesc
 
         @Override
         public String toString() {
-            return LiteJoiner.on(ARROW).join(using(this).getAscendingKeyChainWithRoot()) + ":" +
-                describeType() + describeAvailability();
+            return LiteJoiner.on(ARROW).join(using(this).getAscendingKeyChainWithRoot()) + ":" + describe();
         }
     }
 }

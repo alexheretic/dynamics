@@ -1,13 +1,12 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import alexh.weak.Dynamic;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GetSplittingTest {
 

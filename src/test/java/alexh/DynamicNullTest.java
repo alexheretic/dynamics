@@ -1,13 +1,12 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import alexh.weak.Dynamic;
+import org.junit.Test;
 
 public class DynamicNullTest {
 

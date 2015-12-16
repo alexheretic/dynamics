@@ -15,12 +15,11 @@
  */
 package alexh.weak;
 
+import static alexh.weak.DynamicChildLogic.using;
 import alexh.LiteJoiner;
 import java.util.stream.Stream;
 
-import static alexh.weak.DynamicChildLogic.using;
-
-class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeDescriber {
+class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, Describer {
 
     public DynamicSomething(Object inner) {
         super(inner);
@@ -32,7 +31,7 @@ class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeD
     }
 
     @Override
-    public String describeType() {
+    public String describe() {
         return inner.getClass().getSimpleName();
     }
 
@@ -43,7 +42,7 @@ class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeD
 
     @Override
     public String toString() {
-        return keyLiteral() + ":" + describeType();
+        return keyLiteral() + ":" + describe();
     }
 
     @Override
@@ -75,7 +74,7 @@ class DynamicSomething extends AbstractDynamic<Object> implements Dynamic, TypeD
         @Override
         public String toString() {
             return LiteJoiner.on(ARROW).join(using(this).getAscendingKeyChainWithRoot()) + ":" +
-                describeType();
+                describe();
         }
     }
 }

@@ -15,11 +15,10 @@
  */
 package alexh.weak;
 
+import static java.util.stream.Collectors.toCollection;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toCollection;
 
 class DynamicChildLogic {
 

@@ -15,13 +15,12 @@
  */
 package alexh.weak;
 
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import alexh.LiteJoiner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 
 public abstract class ChildAbsence<Parent extends Dynamic> extends AbstractAbsence<Parent> implements IssueDescribingChild {
 
@@ -64,7 +63,7 @@ public abstract class ChildAbsence<Parent extends Dynamic> extends AbstractAbsen
         }
     }
 
-    public static class Missing<P extends Dynamic & TypeDescriber & AvailabilityDescriber> extends ChildAbsence<P> {
+    public static class Missing<P extends Dynamic & Describer> extends ChildAbsence<P> {
 
         public Missing(P parent, Object key) {
             super(parent, key);
@@ -72,9 +71,9 @@ public abstract class ChildAbsence<Parent extends Dynamic> extends AbstractAbsen
 
         @Override
         protected String describeIssue(LinkedList<Object> ascendingMarkedKeyChain, LinkedList<Object> ascendingKeyChainBeforeSelf) {
-            return format("'%s' key is missing in path %s, available %s: %s%s", key,
+            return format("'%s' key is missing in path %s, from %s: %s", key,
                 LiteJoiner.on(ARROW).join(ascendingMarkedKeyChain), LiteJoiner.on(ARROW).join(ascendingKeyChainBeforeSelf),
-                parent.describeType(), parent.describeAvailability());
+                parent.describe());
         }
     }
 }

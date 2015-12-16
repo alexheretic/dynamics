@@ -63,7 +63,7 @@ import java.util.stream.Stream;
  *
  * @author Alex Butler
  */
-public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, AvailabilityDescriber {
+public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
 
     private static final String FALLBACK_TO_STRING = "Xml[unable to serialize]";
     private static final String NONE_NAMESPACE = "none";
@@ -244,7 +244,15 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
     }
 
     @Override
-    public String describeAvailability() {
+    protected Object keyLiteral() {
+        return ROOT_KEY;
+    }
+
+    @Override
+    public String describe() {
+        if (isString() && asString().isEmpty())
+            return "Empty-Xml";
+
         List<String> keys = Stream.concat(elements(), attributes())
             .map(child -> child.key)
             .collect(toList());
@@ -270,17 +278,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
             keys.add(multiKey + "[0.." + maxIndex + "]");
         });
 
-        return keys.toString();
-    }
-
-    @Override
-    protected Object keyLiteral() {
-        return ROOT_KEY;
-    }
-
-    @Override
-    public String describeType() {
-        return "Xml";
+        return keys.isEmpty() ? "Xml" : "Xml" + keys.toString();
     }
 
     Child childElement(Node inner, int index) {
@@ -325,7 +323,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements TypeDescriber, 
 
     @Override
     public String toString() {
-        return keyLiteral() + ":"+ describeType() + describeAvailability();
+        return keyLiteral() + ":"+ describe();
     }
 
     static class Child extends XmlDynamic implements DynamicChild {

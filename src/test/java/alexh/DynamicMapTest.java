@@ -1,15 +1,14 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import org.junit.Test;
-import java.math.BigDecimal;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
+import alexh.weak.Dynamic;
+import java.math.BigDecimal;
+import org.junit.Test;
 
 public class DynamicMapTest {
 

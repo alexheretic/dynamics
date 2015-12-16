@@ -15,6 +15,7 @@
  */
 package alexh.weak;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,6 +31,7 @@ interface DynamicChild extends Dynamic {
 
         if (val instanceof Map) return new DynamicMap.Child(parent, key, (Map) val);
         else if (val instanceof List) return new DynamicList.Child(parent, key, (List) val);
+        else if (val instanceof Collection) return new DynamicCollection.Child(parent, key, (Collection) val);
         else return new DynamicSomething.Child(parent, key, val);
     }
 

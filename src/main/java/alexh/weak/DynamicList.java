@@ -15,15 +15,14 @@
  */
 package alexh.weak;
 
+import static alexh.weak.DynamicChildLogic.using;
+import static java.lang.String.format;
 import alexh.LiteJoiner;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static alexh.weak.DynamicChildLogic.using;
-import static java.lang.String.format;
-
-class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescriber, AvailabilityDescriber {
+class DynamicList extends AbstractDynamic<List> implements Dynamic, Describer {
 
     public DynamicList(List inner) {
         super(inner);
@@ -64,8 +63,14 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
     }
 
     @Override
-    public String describeType() {
-        return "List";
+    public String describe() {
+        final String type = "List";
+        switch(inner.size()) {
+            case 0: return "Empty-" + type;
+            case 1: return type + "[0]";
+            case 2: return type + "[0, 1]";
+            default: return format("%s[0..%d]", type, inner.size()-1);
+        }
     }
 
     @Override
@@ -74,18 +79,8 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
     }
 
     @Override
-    public String describeAvailability() {
-        switch(inner.size()) {
-            case 0: return "[]";
-            case 1: return "[0]";
-            case 2: return "[0, 1]";
-            default: return format("[0..%d]", inner.size()-1);
-        }
-    }
-
-    @Override
     public String toString() {
-        return keyLiteral() + ":" + describeType() + describeAvailability();
+        return keyLiteral() + ":" + describe();
     }
 
     static class Child extends DynamicList implements DynamicChild {
@@ -111,8 +106,7 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, TypeDescribe
 
         @Override
         public String toString() {
-            return LiteJoiner.on(ARROW).join(using(this).getAscendingKeyChainWithRoot()) + ":" +
-                describeType() + describeAvailability();
+            return LiteJoiner.on(ARROW).join(using(this).getAscendingKeyChainWithRoot()) + ":" + describe();
         }
     }
 }

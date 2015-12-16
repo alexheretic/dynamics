@@ -1,5 +1,13 @@
 package alexh;
 
+import static alexh.ConverterTest.Tester.test;
+import static alexh.weak.Converter.convert;
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
+import static java.util.stream.Collectors.toCollection;
+import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import alexh.weak.Converter;
 import alexh.weak.ConverterMaybe;
 import org.junit.Test;
@@ -11,16 +19,6 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
-import static alexh.ConverterTest.Tester.test;
-import static alexh.weak.Converter.convert;
-import static java.util.Arrays.asList;
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.toCollection;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class ConverterTest {
     
@@ -651,17 +649,17 @@ public class ConverterTest {
         }
 
         <T> Tester expect(Function<Converter, T> method, T expected) {
-            testables.forEach(o -> assertThat(method.apply(convert(o)), is(expected)));
+            testables.forEach(o -> assertThat(method.apply(convert(o))).isEqualTo(expected));
             return this;
         }
 
         <T> Tester expect(Function<ConverterMaybe, Optional<T>> method, Optional<T> expected) {
-            testables.forEach(o -> assertThat(method.apply(convert(o).maybe()), is(expected)));
+            testables.forEach(o -> assertThat(method.apply(convert(o).maybe())).isEqualTo(expected));
             return this;
         }
 
         <T> Tester emptyWhen(Function<ConverterMaybe, Optional<T>> method) {
-            testables.forEach(o -> assertThat(method.apply(convert(o).maybe()), is(Optional.empty())));
+            testables.forEach(o -> assertThat(method.apply(convert(o).maybe())).isEqualTo(Optional.empty()));
             return this;
         }
 

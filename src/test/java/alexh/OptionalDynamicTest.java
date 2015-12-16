@@ -1,19 +1,18 @@
 package alexh;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import alexh.weak.Dynamic;
-import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class OptionalDynamicTest {
 

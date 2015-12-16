@@ -1,11 +1,5 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
-import java.math.BigDecimal;
-import java.util.List;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -15,6 +9,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.*;
+import alexh.weak.Dynamic;
+import org.junit.Before;
+import org.junit.Test;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class DynamicListTest {
 
@@ -81,7 +80,7 @@ public class DynamicListTest {
     @Test
     public void toStringImplementationSize0() {
         Dynamic dynamic = Dynamic.from(emptyList());
-        assertThat(dynamic.toString(), containsString("[]"));
+        assertThat(dynamic.toString(), containsString("Empty-List"));
         System.out.println("list dynamic toString: "+ dynamic);
     }
 

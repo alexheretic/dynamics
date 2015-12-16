@@ -15,14 +15,13 @@
  */
 package alexh.weak;
 
+import static alexh.weak.DynamicChildLogic.using;
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import alexh.LiteJoiner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import static alexh.weak.DynamicChildLogic.using;
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 
 public abstract class ParentAbsence<Parent extends Dynamic> extends AbstractAbsence<Parent> implements IssueDescribingChild {
 
@@ -50,7 +49,7 @@ public abstract class ParentAbsence<Parent extends Dynamic> extends AbstractAbse
         throw new NoSuchElementException(describeIssue(emptyList()));
     }
 
-    public static class Empty<P extends Dynamic & TypeDescriber> extends ParentAbsence<P> {
+    public static class Empty<P extends Dynamic & Describer> extends ParentAbsence<P> {
 
         public Empty(P parent, Object key) {
             super(parent, key);
@@ -58,11 +57,12 @@ public abstract class ParentAbsence<Parent extends Dynamic> extends AbstractAbse
 
         @Override
         protected String describeIssue(LinkedList<Object> ascendingMarkedKeyChain, Object parentKey) {
-            return format("Empty %s '%s' premature end of path %s", parent.describeType(), parentKey, LiteJoiner.on(ARROW).join(ascendingMarkedKeyChain));
+            return format("%s '%s' premature end of path %s", parent.describe(), parentKey,
+                LiteJoiner.on(ARROW).join(ascendingMarkedKeyChain));
         }
     }
 
-    public static class Barren<P extends Dynamic & TypeDescriber> extends ParentAbsence<P> {
+    public static class Barren<P extends Dynamic & Describer> extends ParentAbsence<P> {
 
         public Barren(P parent, Object key) {
             super(parent, key);
@@ -70,7 +70,7 @@ public abstract class ParentAbsence<Parent extends Dynamic> extends AbstractAbse
 
         @Override
         protected String describeIssue(LinkedList<Object> ascendingMarkedKeyChain, Object parentKey) {
-            return format("%s '%s' premature end of path %s", parent.describeType(),
+            return format("%s '%s' premature end of path %s", parent.describe(),
                 parentKey, LiteJoiner.on(ARROW).join(ascendingMarkedKeyChain));
         }
     }

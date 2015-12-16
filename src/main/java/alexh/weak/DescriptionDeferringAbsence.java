@@ -15,10 +15,9 @@
  */
 package alexh.weak;
 
+import static java.util.stream.Collectors.toList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-
-import static java.util.stream.Collectors.toList;
 
 /** Must form a chain of DescriptionDeferringAbsentChild with a IssueDescribingDynamicChild parent */
 class DescriptionDeferringAbsence extends AbstractAbsence<DynamicChild> {

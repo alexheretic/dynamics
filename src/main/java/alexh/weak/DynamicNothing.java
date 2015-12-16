@@ -18,7 +18,7 @@ package alexh.weak;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-enum DynamicNothing implements Dynamic, TypeDescriber {
+enum DynamicNothing implements Dynamic, Describer {
     INSTANCE;
 
     @Override
@@ -47,12 +47,12 @@ enum DynamicNothing implements Dynamic, TypeDescriber {
     }
 
     @Override
-    public String describeType() {
+    public String describe() {
         return "null";
     }
 
     @Override
     public String toString() {
-        return ROOT_KEY + ":" + describeType();
+        return ROOT_KEY + ":" + describe();
     }
 }

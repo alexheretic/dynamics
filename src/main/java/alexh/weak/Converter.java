@@ -15,6 +15,11 @@
  */
 package alexh.weak;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.StreamSupport.stream;
 import alexh.Fluent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,12 +29,6 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.StreamSupport.stream;
 
 /**
  * Logic container for converting weakly typed objects into core types,

@@ -1,21 +1,20 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.*;
-import java.util.stream.Stream;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toSet;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
+import alexh.weak.Dynamic;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DynamicBaseTest {
 
@@ -221,11 +220,11 @@ public class DynamicBaseTest {
 
     @Test
     public void absenceHasNoChildren() {
-        assertThat(dy.get("element that doesn't exist").children().count(), is(0l));
+        assertThat(dy.get("element that doesn't exist").children().count()).isEqualTo(0l);
     }
 
     @Test
     public void providesConverterInstanceMethod() {
-        assertThat(dy.get("key1.key3.key4", ".").convert().intoString(), is("123"));
+        assertThat(dy.get("key1.key3.key4", ".").convert().intoString()).isEqualTo("123");
     }
 }

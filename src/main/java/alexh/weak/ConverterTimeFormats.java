@@ -1,5 +1,7 @@
 package alexh.weak;
 
+import static alexh.weak.Converter.convert;
+import static java.time.temporal.ChronoField.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,9 +10,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.SignStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.function.Function;
-
-import static alexh.weak.Converter.convert;
-import static java.time.temporal.ChronoField.*;
 
 /**
  * Permissive {@link DateTimeFormatter}s used by {@link Converter}

@@ -15,7 +15,8 @@
  */
 package alexh.weak;
 
-interface AvailabilityDescriber {
+/** An instance that can describe it's type */
+interface Describer {
 
-    String describeAvailability();
+    String describe();
 }
