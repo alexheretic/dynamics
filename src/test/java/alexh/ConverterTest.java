@@ -402,7 +402,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 59839))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -416,7 +416,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "123412344444")
             .expect(Converter::intoList, singletonList(123412344444l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 123412344444l))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -446,7 +446,7 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDouble))
             .expect(Converter::intoList, singletonList(someDouble))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDouble))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -491,7 +491,7 @@ public class ConverterTest {
             .expect(Converter::intoString, String.valueOf(someDecimal))
             .expect(Converter::intoList, singletonList(someDecimal))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, someDecimal))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341235), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -534,7 +534,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "59839")
             .expect(Converter::intoList, singletonList(59839))
             .expect(Converter::intoMap, singletonMap(0, 59839))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(59839), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -625,7 +625,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "12341234")
             .expect(Converter::intoList, singletonList(12341234))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 12341234))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341234), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(12341234), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
@@ -675,7 +675,7 @@ public class ConverterTest {
             .expect(Converter::intoString, "1234123412341234")
             .expect(Converter::intoList, singletonList(1234123412341234l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 1234123412341234l))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.of("Europe/London")))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
