@@ -8,6 +8,7 @@ install: true
 cache:
   directories:
   - $HOME/.m2
+  - /usr/lib/jvm/java-8-oracle
   
 addons:
   apt:
