@@ -139,16 +139,6 @@ public class ConverterTest {
             .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Europe/London]"))
             .expect(Converter::intoLocalDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Europe/London]").toLocalDateTime());
 
-        test("2015-03-07T00:37:41.946642144Z")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Asia/Novosibirsk")), ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Z]"))
-            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Z]"))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946642144"));
-
-        test("2015-03-07T00:37:41.946+00:00")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
-            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946+00:00[Europe/London]"))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
-
         test("2015-03-07T00:37:41.946")
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
@@ -173,6 +163,90 @@ public class ConverterTest {
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-01-01T00:00:00.000Z[Europe/London]"))
             .throwsWhen(Converter::intoZonedDateTime)
             .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-01-01T00:00:00.000"));
+    }
+
+    @Test
+    public void timeZoneNameEnd() {
+        test("2015-03-07T00:37:41.946642144Z[Europe/London]")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Pacific/Tahiti")), ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Europe/London]"))
+            .expect(Converter::intoLocalDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Europe/London]").toLocalDateTime());
+
+        test("2015-03-07T00:37:41.946Z[Europe/London]")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41Z[Europe/London]")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.000Z[Europe/London]"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.000"));
+
+        test("2015-03-07T00:37Z[Europe/London]")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:00.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:00.000Z[Europe/London]"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:00.000"));
+
+        test("2015-03-07T12Z[Europe/London]")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T12:00:00.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T12:00:00.000Z[Europe/London]"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T12:00:00.000"));
+    }
+
+    @Test
+    public void offsetEnd() {
+        test("2015-03-07T00:37:41.946642144+00:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Asia/Novosibirsk")), ZonedDateTime.parse("2015-03-07T00:37:41.946642144+00:00"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144+00:00"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946642144"));
+
+        test("2015-03-07T00:37:41.946+00:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("CET")), ZonedDateTime.parse("2015-03-07T00:37:41.946+00:00"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946+00:00"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41+00:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.000Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.000"));
+
+        test("2015-03-07T00:37+00:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:00.000+00:00"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:00.000+00:00"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:00.000"));
+
+        test("2015-03-07T12+00:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T12:00:00.000+00:00"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T12:00:00.000+00:00"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T12:00:00.000"));
+    }
+
+    @Test
+    public void zEnd() {
+        test("2015-03-07T00:37:41.946642144Z")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Asia/Novosibirsk")), ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Z]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946642144Z[Z]"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946642144"));
+
+        test("2015-03-07T00:37:41.946Z")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+
+        test("2015-03-07T00:37:41Z")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:41.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:41.000Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.000"));
+
+        test("2015-03-07T00:37Z")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T00:37:00.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T00:37:00.000Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:00.000"));
+
+        test("2015-03-07T12Z")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T12:00:00.000Z[Europe/London]"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T12:00:00.000Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T12:00:00.000"));
     }
 
     @Test
