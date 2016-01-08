@@ -418,6 +418,9 @@ public class ConverterTest {
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 123412344444l))
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(123412344444l), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
+
+        test(-123412344444l).throwsWhen(Converter::intoInteger);
+        test(1234l).expect(Converter::intoInteger, 1234);
     }
 
     @Test
@@ -676,6 +679,17 @@ public class ConverterTest {
             .expect(Converter::intoList, singletonList(1234123412341234l))
             .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, 1234123412341234l))
             .expect(Converter::intoLocalDateTime, LocalDateTime.ofInstant(Instant.ofEpochMilli(1234123412341234l), ZoneId.systemDefault()))
+            .throwsWhen(Converter::intoZonedDateTime);
+
+        test(Optional.of("123"))
+            .expect(Converter::intoInteger, 123)
+            .expect(Converter::intoLong, 123l)
+            .expect(Converter::intoDouble, 123d)
+            .expect(Converter::intoDecimal, new BigDecimal(123l))
+            .expect(Converter::intoString, "123")
+            .expect(Converter::intoList, singletonList("123"))
+            .expect(Converter::intoMap, singletonMap(EXPECTED_DEFAULT_MAP_KEY, "123"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("0123-01-01T00:00"))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
