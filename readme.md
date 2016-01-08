@@ -1,5 +1,6 @@
 Dynamics
 ------
+[![Build Status](https://travis-ci.org/alexheretic/dynamics.svg?branch=master)](https://travis-ci.org/alexheretic/dynamics)
 
 Dynamics is a Java library for handling nested weakly-typed data
 
