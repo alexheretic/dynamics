@@ -122,18 +122,19 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-2.0 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+2.1 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>2.0</version>
+  <version>2.1</version>
 </dependency>
 ```
 
 ### Changelog
-
+2.1
+ - Fixed conversions of some zoned iso strings into `ZonedDateTime` instances
 2.0
- - `java.util.Collection` instance support
+ - `java.util.Collection` instance support, ie Sets now have children
  - Minor format change to error messages
