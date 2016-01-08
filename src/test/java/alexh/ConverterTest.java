@@ -128,7 +128,7 @@ public class ConverterTest {
             .expect(Converter::intoDouble, 123451123412341231.67132123121234761239847612938743123899d)
             .expect(Converter::intoDecimal, new BigDecimal("123451123412341231.6713212312123476123984761293874312389"))
             .expect(Converter::intoLocalDateTime, LocalDateTime
-                .ofInstant(Instant.ofEpochMilli(123451123412341232l), ZoneId.of("Europe/London")))
+                .ofInstant(Instant.ofEpochMilli(123451123412341232l), ZoneId.systemDefault()))
             .throwsWhen(Converter::intoZonedDateTime);
     }
 
