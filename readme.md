@@ -2,6 +2,7 @@ Dynamics
 ------
 [![Build Status](https://travis-ci.org/alexheretic/dynamics.svg?branch=master)](https://travis-ci.org/alexheretic/dynamics)
 [![Coverage Status](https://coveralls.io/repos/alexheretic/dynamics/badge.svg?branch=master&service=github)](https://coveralls.io/github/alexheretic/dynamics?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.alexheretic/dynamics.svg)](http://mvnrepository.com/artifact/com.github.alexheretic/dynamics)
 
 Dynamics is a Java library for handling nested weakly-typed data
 
