@@ -49,6 +49,13 @@ With String keys we can fetch deeply in a single get call by splitting the strin
 message.get("product.investment.investment-2", ".").maybe().as(BigDecimal.class); 
 // Optional[43213.44]
 ```
+
+For '.' character splitting `Dynamic#dget(String)` method is supplied for convenience
+```java
+message.dget("product.investment.investment-2").maybe().as(BigDecimal.class); 
+// Optional[43213.44]
+```
+
 #### Error Describing
 
 Dynamic instances throw descriptive exceptions when data is missing, or not as selected.
@@ -56,7 +63,7 @@ Dynamic instances throw descriptive exceptions when data is missing, or not as s
 // exception message: 
 // "'holdings' key is missing in path root->product->*holdings*->foo->bar, 
 //   available root->product: Map[effective, investment, id]"
-message.get("product.holdings.foo.bar", ".").asObject(); // throws
+message.dget("product.holdings.foo.bar").asObject(); // throws
 ```
 #### Type Conversion
 
