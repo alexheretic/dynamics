@@ -1,8 +1,6 @@
 package alexh;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.AllOf.allOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
 import org.junit.Before;
@@ -27,6 +25,7 @@ public class DynamicSomethingTest {
     public void noChildren() {
         assertFalse(dy.get("anything").isPresent());
         assertFalse(dy.get(1).isPresent());
+        assertThat(dy.children()).isEmpty();
     }
 
     @Test
@@ -42,7 +41,9 @@ public class DynamicSomethingTest {
     @Test
     public void toStringImplementation() {
         Dynamic obj = Dynamic.from(new Object());
-        assertThat(obj.toString().toLowerCase(), allOf(containsString("root"), containsString("object")));
+        assertThat(obj.toString())
+            .containsIgnoringCase("root")
+            .containsIgnoringCase("object");
         System.out.println("object dynamic toString: "+ obj);
     }
 
@@ -59,7 +60,9 @@ public class DynamicSomethingTest {
     @Test
     public void childToStringImplementation() {
         Dynamic obj = Dynamic.from(new Object()).get(123);
-        assertThat(obj.toString().toLowerCase(), allOf(containsString("root"), containsString("123")));
+        assertThat(obj.toString())
+            .containsIgnoringCase("root")
+            .contains("123");
         System.out.println("object-child dynamic toString: "+ obj);
     }
 }

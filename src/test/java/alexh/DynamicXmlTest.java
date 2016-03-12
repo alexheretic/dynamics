@@ -3,7 +3,7 @@ package alexh;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.CoreMatchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
@@ -121,7 +121,7 @@ public class DynamicXmlTest {
         assertThat(root.get("xml|content_2").children()
             .filter(child -> child.key().asString().startsWith("multi_element"))
             .mapToInt(dy -> Integer.valueOf(dy.asString()))
-            .sum(), is(123 + 3214));
+            .sum()).isEqualTo(123 + 3214);
     }
 
     @Test
@@ -170,12 +170,29 @@ public class DynamicXmlTest {
 
     @Test
     public void complexElementValueShouldBeStringContents() {
-        assertThat(root.get("xml.content_2", ".").asString().replaceAll("\\s", ""),
-            is(XML_CONTENT_2_GUTS.replaceAll("\\s", "")));
+        assertThat(root.get("xml.content_2", ".").asString().replaceAll("\\s", ""))
+            .isEqualTo(XML_CONTENT_2_GUTS.replaceAll("\\s", ""));
     }
 
     @Test
     public void toStringImplementation() {
+        assertThat(root.toString())
+            .contains("Xml") // type
+            .contains("xml"); // child
+        System.out.println(root);
+    }
+
+    @Test
+    public void childToStringImplementation() {
+        String childToString = root.get("xml|content_1").toString();
+        assertThat(childToString)
+            .contains("Xml") // type
+            .contains("empty_element", "int_element", "large_decimal", "just_attrs", "multi_empty_element"); // children
+        System.out.println(childToString);
+    }
+
+    @Test
+    public void asStringImplementation() {
         try {
             Diff diff = new Diff(XML, root.asString());
             assertTrue(diff.toString(), diff.identical());
@@ -187,7 +204,7 @@ public class DynamicXmlTest {
     }
 
     @Test
-    public void childToStringImplementation() {
+    public void childAsStringImplementation() {
         try {
             Diff diff = new Diff("<wrap>" + XML_CONTENT_2_GUTS + "</wrap>", "<wrap>" + root.get("xml.content_2", ".").asString()+ "</wrap>");
             assertTrue(diff.toString(), diff.identical());
@@ -200,8 +217,8 @@ public class DynamicXmlTest {
 
     @Test
     public void constructors() {
-        assertThat(root, is(new XmlDynamic(new StringReader(XML))));
-        assertThat(root, is(new XmlDynamic(new InputSource(new StringReader(XML)))));
+        assertThat(root).isEqualTo(new XmlDynamic(new StringReader(XML)));
+        assertThat(root).isEqualTo(new XmlDynamic(new InputSource(new StringReader(XML))));
     }
 
     @Test
@@ -240,6 +257,6 @@ public class DynamicXmlTest {
             .map(el -> el.key().asString())
             .collect(toList());
 
-        assertThat(els, is(asList("multi_empty_element", "multi_empty_element[1]", "multi_empty_element[2]")));
+        assertThat(els).isEqualTo(asList("multi_empty_element", "multi_empty_element[1]", "multi_empty_element[2]"));
     }
 }
