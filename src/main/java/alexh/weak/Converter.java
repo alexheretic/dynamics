@@ -78,7 +78,7 @@ public class Converter {
             return convert(asList((Object[]) value));
 
         return typeConverters.getOrDefault(value.getClass(), typeConverters.entrySet().stream()
-            .filter(entry -> entry.getKey().isInstance(value))
+            .filter(entry -> !entry.getKey().equals(java.util.Date.class) && entry.getKey().isInstance(value))
             .findFirst()
             .map(Map.Entry::getValue).get()).apply(value);
     }
@@ -479,7 +479,7 @@ public class Converter {
 
     static class UtilDateInstantConverter extends TypeConverter<java.util.Date> {
 
-        public UtilDateInstantConverter(Object o) {
+        UtilDateInstantConverter(Object o) {
             super(o);
         }
 

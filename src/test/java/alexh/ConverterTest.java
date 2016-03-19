@@ -12,10 +12,7 @@ import alexh.weak.Converter;
 import alexh.weak.ConverterMaybe;
 import org.junit.Test;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -278,11 +275,27 @@ public class ConverterTest {
     }
 
     @Test
+    public void noTIsoDateString() {
+        test("2016-03-19 22:26:58.820234345")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneOffset.UTC), ZonedDateTime.parse("2016-03-19T22:26:58.820234345Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2016-03-19T22:26:58.820234345"))
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
+    public void sqlTimestampSupport() {
+        test(java.sql.Timestamp.from(Instant.ofEpochSecond(0, 123345456)))
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneOffset.UTC), ZonedDateTime.parse("1970-01-01T01:00:00.123345456Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("1970-01-01T01:00:00.123345456"))
+            .throwsWhen(Converter::intoZonedDateTime);
+    }
+
+    @Test
     public void dayMonthYearString() {
-        test("7-March-2015 00:37:41.946-02:00")
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T02:37:41.946Z"))
-            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T02:37:41.946Z"))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946"));
+        test("7-March-2015 00:37:41.946123234-02:00")
+            .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T02:37:41.946123234Z"))
+            .converts(Converter::intoZonedDateTime, ZonedDateTime.parse("2015-03-07T02:37:41.946123234Z"))
+            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("2015-03-07T00:37:41.946123234"));
 
         test("7-March-2015 00:37:41.946")
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("+00:00")), ZonedDateTime.parse("2015-03-07T00:37:41.946Z"))
