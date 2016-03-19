@@ -283,14 +283,6 @@ public class ConverterTest {
     }
 
     @Test
-    public void sqlTimestampSupport() {
-        test(java.sql.Timestamp.from(Instant.ofEpochSecond(0, 123345456)))
-            .converts(c -> c.intoZonedDateTimeOrUse(ZoneOffset.UTC), ZonedDateTime.parse("1970-01-01T01:00:00.123345456Z"))
-            .expect(Converter::intoLocalDateTime, LocalDateTime.parse("1970-01-01T01:00:00.123345456"))
-            .throwsWhen(Converter::intoZonedDateTime);
-    }
-
-    @Test
     public void dayMonthYearString() {
         test("7-March-2015 00:37:41.946123234-02:00")
             .converts(c -> c.intoZonedDateTimeOrUse(ZoneId.of("Europe/London")), ZonedDateTime.parse("2015-03-07T02:37:41.946123234Z"))
