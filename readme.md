@@ -138,17 +138,19 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>2.2</version>
+  <version>2.3</version>
 </dependency>
 ```
 
 ### Changelog
+2.3
+ - Fixed thread-safety issue with XmlDynamic#children() traversal
+
 2.2
  - Improved `java.sql.Timestamp` style toString date times to properly convert with nanosecond accuracy
 
 2.1
  - Fixed conversions of some zoned iso strings into `ZonedDateTime` instances
-
 
 2.0
  - `java.util.Collection` instance support, ie Sets now have children
