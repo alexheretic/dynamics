@@ -15,18 +15,6 @@
  */
 package alexh.weak;
 
-import static alexh.Unchecker.uncheckedGet;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -36,6 +24,17 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
+import static alexh.Unchecker.uncheckedGet;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Dynamic implementation for XML documents
@@ -69,14 +68,21 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
     private static final String NONE_NAMESPACE = "none";
     private static final String NS_INDICATOR = "::";
 
-    private static Stream<Node> stream(/*nullable*/ NodeList nodes) {
-        if (nodes == null) return Stream.empty();
-        return IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
+    /** Needs to be thread-safe, childNodes NodeList is not! */
+    private static Stream<Node> streamChildNodes(Node node) {
+        int children = node.getChildNodes().getLength();
+        Node firstChild = node.getFirstChild();
+        if (firstChild == null) return Stream.empty();
+        return Stream.iterate(firstChild, prev -> prev != null ? prev.getNextSibling() : null)
+            .limit(children)
+            .filter(n -> n != null);
     }
 
-    private static Stream<Node> stream(/*nullable*/ NamedNodeMap nodeMap) {
-        if (nodeMap == null) return Stream.empty();
-        return IntStream.range(0, nodeMap.getLength()).mapToObj(nodeMap::item);
+    /** Needs to be thread-safe */
+    private static Stream<Node> streamAttributes(Node node) {
+        final NamedNodeMap attributes = node.getAttributes();
+        if (attributes == null) return Stream.empty();
+        return IntStream.range(0, attributes.getLength()).mapToObj(attributes::item);
     }
 
     private static Node inputSourceToNode(InputSource xml) {
@@ -350,7 +356,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
         @Override
         protected Stream<Child> attributesWith(Predicate<Node> predicate) {
             final Map<String, Integer> keyLastIndex = new HashMap<>();
-            return stream(inner.getAttributes())
+            return streamAttributes(inner)
                 .filter(predicate)
                 .map(attr -> {
                     final Integer index = Optional.ofNullable(keyLastIndex.get(attr.getLocalName())).map(i -> i + 1).orElse(0);
@@ -362,7 +368,7 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
         @Override
         protected Stream<Child> elementsWith(Predicate<Node> predicate) {
             final Map<String, Integer> keyLastIndex = new HashMap<>();
-            return stream(inner.getChildNodes())
+            return streamChildNodes(inner)
                 .filter(node -> node.getLocalName() != null)
                 .filter(predicate)
                 .map(node -> {
