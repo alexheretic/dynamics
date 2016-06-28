@@ -132,7 +132,7 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-2.2 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+2.3 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>
