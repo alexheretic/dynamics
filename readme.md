@@ -1,14 +1,14 @@
 Dynamics
-------
+========
 [![Build Status](https://travis-ci.org/alexheretic/dynamics.svg?branch=master)](https://travis-ci.org/alexheretic/dynamics)
 [![Coverage Status](https://coveralls.io/repos/alexheretic/dynamics/badge.svg?branch=master&service=github)](https://coveralls.io/github/alexheretic/dynamics?branch=master)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.alexheretic/dynamics.svg)](http://mvnrepository.com/artifact/com.github.alexheretic/dynamics)
 
-Dynamics is a Java library for handling nested weakly-typed data
+Dynamics is a Java library for handling nested weakly-typed data in a fluent and null-safe way.
 
-Initially developed to help handle JSON and XML messages in Java servers without tedious and repetitive null checking, type conversion & casting
+Initially developed to help handle JSON and XML messages in Java servers without tedious and repetitive null checking, type conversion & casting. It has become a powerful & productive way of directly dealing with dynamic data without the horribleness that can typically involve.
 
-### Weakly-Typed Nested Data Structure Handling
+## Weakly-Typed Nested Data Structure Handling
 ```json
 {
   "product": {
@@ -19,9 +19,15 @@ Initially developed to help handle JSON and XML messages in Java servers without
     "id": "RR1209478",
     "effective": "2015-03-07T00:35:11"
   }
-} 
+}
 ```
-
+```java
+Dynamic.from(jsonMap)
+    .get("product")
+    .get("effective")
+    .convert().intoLocalDateTime(); // java.time.LocalDateTime 2015-03-07T00:35:11
+```
+### In Detail
 An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
 
 ```java
@@ -46,13 +52,13 @@ message.get("product").get("one").get("two").get("three").get("four").isPresent(
 With String keys we can fetch deeply in a single get call by splitting the string into multiple gets and supplying a splitter string. In addition to `isPresent()` method a Dynamic my be unpacked into an Optional with `asOptional()` or can be wrapped into an `OptionalWeak` and handled fluently with `maybe()`
 
 ```java
-message.get("product.investment.investment-2", ".").maybe().as(BigDecimal.class); 
+message.get("product.investment.investment-2", ".").maybe().as(BigDecimal.class);
 // Optional[43213.44]
 ```
 
 For '.' character splitting `Dynamic#dget(String)` method is supplied for convenience
 ```java
-message.dget("product.investment.investment-2").maybe().as(BigDecimal.class); 
+message.dget("product.investment.investment-2").maybe().as(BigDecimal.class);
 // Optional[43213.44]
 ```
 
@@ -60,8 +66,8 @@ message.dget("product.investment.investment-2").maybe().as(BigDecimal.class);
 
 Dynamic instances throw descriptive exceptions when data is missing, or not as selected.
 ```java
-// exception message: 
-// "'holdings' key is missing in path root->product->*holdings*->foo->bar, 
+// exception message:
+// "'holdings' key is missing in path root->product->*holdings*->foo->bar,
 //   available root->product: Map[effective, investment, id]"
 message.dget("product.holdings.foo.bar").asObject(); // throws
 ```
@@ -74,9 +80,9 @@ Converter.convert(1234.4321d).intoDecimal(); // BigDecimal 1234.4321 (approx)
 ```
 Usage is also built into Dynamic instances.
 ```java
-message.get("product").get("effective").convert().intoLocalDateTime(); 
+message.get("product").get("effective").convert().intoLocalDateTime();
 // LocalDateTime of 2015-03-07T00:35:11
-message.get("product").get("effective").maybe().convert().intoLocalDateTime(); 
+message.get("product").get("effective").maybe().convert().intoLocalDateTime();
 // Optional<LocalDateTime>[2015-03-07T00:35:11]
 ```
 
@@ -100,7 +106,7 @@ We can select the nested 'name' element value just like a normal `Dynamic`
 Dynamic xml = new XmlDynamic(xmlMessage); // 'xmlMessage' is a string of the above xml
 xml.get("product.investment.info.current.name", ".").asString(); // "some name"
 ```
-Also since XML has certain key name restrictions the pipe character '|' can be used as a splitter without declaration 
+Also since XML has certain key name restrictions the pipe character '|' can be used as a splitter without declaration
 ```java
 xml.get("product|investment|info|current|name").asString(); // "some name"
 ```
@@ -123,7 +129,7 @@ Namespaces are ignored by default, but can be used explicitly using the "::" key
 ```
 ```java
 xmlWithNamespaces.get("product|message").asString();
-xmlWithNamespaces.get("http://example.com/example::product|none::message").asString(); 
+xmlWithNamespaces.get("http://example.com/example::product|none::message").asString();
 // both return "hello"
 ```
 <br/>
@@ -143,14 +149,18 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 ```
 
 ### Changelog
+3.0 (in development)
+ - Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBredthFirst() deep child streaming
+ - Add XmlDynamic.hasElementName(String) namespace support
+
 2.3
- - Fixed thread-safety issue with XmlDynamic#children() traversal
+ - Fix thread-safety issue with XmlDynamic#children() traversal
 
 2.2
- - Improved `java.sql.Timestamp` style toString date times to properly convert with nanosecond accuracy
+ - Improve `java.sql.Timestamp` style toString date times to properly convert with nanosecond accuracy
 
 2.1
- - Fixed conversions of some zoned iso strings into `ZonedDateTime` instances
+ - Fix conversions of some zoned iso strings into `ZonedDateTime` instances
 
 2.0
  - `java.util.Collection` instance support, ie Sets now have children
