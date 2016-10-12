@@ -27,7 +27,9 @@ Dynamic.from(jsonMap)
     .get("effective")
     .convert().intoLocalDateTime(); // java.time.LocalDateTime 2015-03-07T00:35:11
 ```
-### In Detail
+
+#### In Detail
+
 An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
 
 ```java
@@ -138,18 +140,18 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-2.3 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+3.0 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>2.3</version>
+  <version>3.0</version>
 </dependency>
 ```
 
 ### Changelog
-3.0 (in development)
+3.0
  - Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBredthFirst() deep child streaming
  - Add XmlDynamic.hasElementName(String) namespace support
 
