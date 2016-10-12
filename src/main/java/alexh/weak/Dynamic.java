@@ -15,11 +15,10 @@
  */
 package alexh.weak;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 /**
  * Wrapper allowing weakly-typed nested structure selection that's null-safe
@@ -108,4 +107,16 @@ public interface Dynamic extends Weak<Dynamic> {
      * @return key instance wrapper
      */
     Weak<?> key();
+
+    default Stream<Dynamic> allChildren() {
+        return allChildrenDepthFirst();
+    }
+
+    default Stream<Dynamic> allChildrenDepthFirst() {
+        return children().flatMap(child -> Stream.concat(Stream.of(child), child.allChildrenDepthFirst()));
+    }
+
+    default Stream<Dynamic> allChildrenBreadthFirst() {
+        return StreamSupport.stream(spliteratorUnknownSize(new BreadthChildIterator(this), Spliterator.ORDERED), false);
+    }
 }

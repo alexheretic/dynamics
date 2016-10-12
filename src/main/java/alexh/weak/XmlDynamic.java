@@ -15,6 +15,17 @@
  */
 package alexh.weak;
 
+import static alexh.Unchecker.uncheckedGet;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -24,17 +35,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import static alexh.Unchecker.uncheckedGet;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Dynamic implementation for XML documents
@@ -108,14 +108,27 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
      * @return predicate to match XmlDynamic instances of elements with input name
      */
     public static Predicate<? super Dynamic> hasElementName(String elementName) {
+        final String[] nsKey = elementName.split(NS_INDICATOR);
+
         return element -> {
             if (!(element instanceof XmlDynamic)) return false;
+
+            String simpleName = elementName;
+            if (nsKey.length == 2) {
+                String namespace = nsKey[0];
+                String elNamespace = ((XmlDynamic) element).inner.getNamespaceURI();
+                if (NONE_NAMESPACE.equals(namespace)) {
+                    if (elNamespace != null) return false;
+                }
+                else if (!namespace.equals(elNamespace)) return false;
+                simpleName = nsKey[1];
+            }
 
             String key = element.key().asString();
             if (key.endsWith("]"))
                 key = key.substring(0, key.lastIndexOf("["));
 
-            return key.equalsIgnoreCase(elementName);
+            return key.equalsIgnoreCase(simpleName);
         };
     }
 

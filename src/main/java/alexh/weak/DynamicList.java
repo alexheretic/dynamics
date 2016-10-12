@@ -19,6 +19,7 @@ import static alexh.weak.DynamicChildLogic.using;
 import static java.lang.String.format;
 import alexh.LiteJoiner;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -28,33 +29,19 @@ class DynamicList extends AbstractDynamic<List> implements Dynamic, Describer {
         super(inner);
     }
 
-    /** @return nullable */
-    private Integer keyToIndex(Object key) {
-        Integer index = null;
-
-        if (key instanceof Integer) {
-            index = (Integer) key;
-        }
-        else if (key instanceof Number) {
-            index = ((Number) key).intValue();
-        }
-        else if (key instanceof String) {
-            try { index = Integer.valueOf((String) key); }
-            catch (NumberFormatException ex) {/* no need to handle directly */}
-        }
-
-        return index != null && index >= 0 && index < inner.size() ? index : null;
-    }
-
     @Override
     public Dynamic get(Object key) {
         if (inner.isEmpty()) return new ParentAbsence.Empty<>(this, key);
 
-        final Integer index = keyToIndex(key);
+        Integer index = Optional.ofNullable(key)
+            .flatMap(k -> Converter.convert(k).maybe().intoInteger())
+            .orElse(null);
         if (index == null) return new ChildAbsence.Missing<>(this, key);
 
+        if (index < 0 || index >= inner.size()) return new ChildAbsence.Missing<>(this, index);
+
         final Object val = inner.get(index);
-        return val != null ? DynamicChild.from(this, key, val) : new ChildAbsence.Null(this, key);
+        return val != null ? DynamicChild.from(this, index, val) : new ChildAbsence.Null(this, index);
     }
 
     @Override

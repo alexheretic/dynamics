@@ -1,18 +1,18 @@
 package alexh;
 
-import alexh.weak.Dynamic;
-import alexh.weak.XmlDynamic;
-import java.io.StringReader;
-import java.util.List;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Test;
-import org.xml.sax.InputSource;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
+import alexh.weak.Dynamic;
+import alexh.weak.XmlDynamic;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Test;
+import org.xml.sax.InputSource;
+import java.io.StringReader;
+import java.util.List;
 
 public class DynamicXmlTest {
 
@@ -226,5 +226,25 @@ public class DynamicXmlTest {
             .collect(toList());
 
         assertThat(els).isEqualTo(asList("multi_empty_element", "multi_empty_element[1]", "multi_empty_element[2]"));
+    }
+
+    @Test
+    public void depthSearchTest() {
+        Dynamic match = root.allChildrenDepthFirst()
+            .filter(el -> el.asString().equals("123"))
+            .findAny()
+            .get();
+
+        assertThat(match.key().asString()).isEqualTo("multi_element");
+    }
+
+    @Test
+    public void breadthSearchTest() {
+        Dynamic match = root.allChildrenBreadthFirst()
+            .filter(el -> el.asString().equals("123"))
+            .findAny()
+            .get();
+
+        assertThat(match.key().asString()).isEqualTo("multi_element");
     }
 }

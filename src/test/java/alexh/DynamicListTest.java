@@ -5,11 +5,11 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -27,7 +27,7 @@ public class DynamicListTest {
                 .append("mk2", "bar"),
             "hello",
             new Object(),
-            asList(1, 2, 3)
+            asList(1, 2, 3, null)
         ));
         assertNotNull(dy);
     }
@@ -51,8 +51,12 @@ public class DynamicListTest {
     @Test
     public void children() {
         List<Dynamic> children = dy.children().collect(toList());
-        assertThat(children.toString(), children.get(1).asObject(), is("hello"));
-        assertThat(children.toString(), children.get(3).asObject(), is(asList(1, 2, 3)));
+        Assertions.assertThat(children.get(1).asObject())
+            .as(children.toString())
+            .isEqualTo("hello");
+        Assertions.assertThat(children.get(3).asObject())
+            .as(children.toString())
+            .isEqualTo(asList(1, 2, 3, null));
     }
 
     @Test
@@ -63,7 +67,7 @@ public class DynamicListTest {
 
     @Test
     public void equalsImplementation() {
-        assertEquals(Dynamic.from(asList(1, 2, 3)), Dynamic.from(asList(1, 2, 3)));
+        assertEquals(Dynamic.from(asList(1, 2, 3, null)), Dynamic.from(asList(1, 2, 3, null)));
     }
 
     @Test
@@ -98,34 +102,46 @@ public class DynamicListTest {
         System.out.println("list dynamic toString: "+ dynamic);
     }
 
+    private final Dynamic dy2 = Dynamic.from(asList(
+        new Fluent.HashMap<>()
+            .append("mk1", "foo")
+            .append("mk2", "bar"),
+        "hello",
+        new Object(),
+        asList(1, 2, 3, null)
+    ));
+
     @Test
     public void childEqualsImplementation() {
-        Dynamic dy2 = Dynamic.from(asList(
-            new Fluent.HashMap<>()
-                .append("mk1", "foo")
-                .append("mk2", "bar"),
-            "hello",
-            new Object(),
-            asList(1, 2, 3)
-        ));
-
         assertEquals(dy.get(1).get("foo"), dy2.get(1).get("foo"));
         assertEquals(dy.get(3).get(1), dy2.get(3).get(1));
+
+    }
+
+    @Test
+    public void convertedKeyEquals() {
+        assertEquals("non-null value index conversion", dy.get(3).get("0"), dy2.get(3).get(0));
+        assertEquals("null value index conversion", dy.get(3).get("3"), dy2.get(3).get(3));
+        assertEquals("out-of-bounds value index conversion", dy.get(3).get("999"), dy2.get(3).get(999));
     }
 
     @Test
     public void childHashCodeImplementation() {
-        Dynamic dy2 = Dynamic.from(asList(
-            new Fluent.HashMap<>()
-                .append("mk1", "foo")
-                .append("mk2", "bar"),
-            "hello",
-            new Object(),
-            asList(1, 2, 3)
-        ));
-
         assertEquals(dy.get(1).get("foo").hashCode(), dy2.get(1).get("foo").hashCode());
         assertEquals(dy.get(3).get(1).hashCode(), dy2.get(3).get(1).hashCode());
+    }
+
+    @Test
+    public void convertedKeyHashCode() {
+        assertEquals("non-null value index conversion", dy.get(3).get("0").hashCode(), dy2.get(3).get(0).hashCode());
+        assertEquals("null value index conversion", dy.get(3).get("3").hashCode(), dy2.get(3).get(3).hashCode());
+        assertEquals("out-of-bounds value index conversion", dy.get(3).get("999").hashCode(), dy2.get(3).get(999).hashCode());
+    }
+
+    @Test
+    public void convertedPresentKeyShouldBeInteger() {
+        assertTrue("non-converted", dy.get(3).key().is(Integer.class));
+        assertTrue("converted", dy.get("3").key().is(Integer.class));
     }
 
     @Test
