@@ -16,7 +16,10 @@
 package alexh.weak;
 
 import static java.util.Spliterators.spliteratorUnknownSize;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Spliterator;
 import java.util.regex.Pattern;
 import java.util.stream.*;
 
@@ -38,7 +41,7 @@ import java.util.stream.*;
  *    }
  * }</pre>
  * We can select the nested 'name' field with
- * {@code Dynamic.from(message).get("product.investment.info.current.name", ".").asString()}
+ * {@code Dynamic.from(message).dget("product.investment.info.current.name").asString()}
  *
  * @author Alex Butler
  */
@@ -73,7 +76,7 @@ public interface Dynamic extends Weak<Dynamic> {
      */
     Dynamic get(Object key);
 
-    /** @return stream of all children of this instance */
+    /** @return stream of all immediate children of this instance */
     Stream<Dynamic> children();
 
     /**
@@ -93,7 +96,7 @@ public interface Dynamic extends Weak<Dynamic> {
 
     /**
      * Shortcut for {@code dynamic.get("some.path.to.somewhere", ".")} avoiding the need for the second argument
-     * Warning this should be considered beta, I'm not sure this is the best API approach
+     * ie {@code dynamic.dget("some.path.to.somewhere")}
      * @param dotSeparatedPath successive child keys separated by "." character
      * @return dynamic representing the nested child
      */
@@ -108,14 +111,59 @@ public interface Dynamic extends Weak<Dynamic> {
      */
     Weak<?> key();
 
+    /**
+     * @see #allChildrenDepthFirst()
+     * @return stream of all children of this instance at any depth
+     */
     default Stream<Dynamic> allChildren() {
         return allChildrenDepthFirst();
     }
 
+    /**
+     * Returns a stream of all children in a depth first order, for example a structure
+     * <pre>
+     * services:
+     *   service1:
+     *     name: service one
+     *   service2:
+     *     name: service two
+     * </pre>
+     * {@code services.allChildrenDepthFirst()} would produce a stream ordered
+     * [service1, service1.name, service2, service2.name]
+     *
+     * As such depth first searching can be implemented, for example
+     * <pre>{@code
+     * services.allChildrenDepthFirst()
+     *     .filter(child -> child.isString() && child.asString().equals("service one"))
+     *     .findAny(); // Optional[Dynamic: service1.name]
+     * }</pre>
+     *
+     * @return stream of all children of this instance at any depth
+     */
     default Stream<Dynamic> allChildrenDepthFirst() {
         return children().flatMap(child -> Stream.concat(Stream.of(child), child.allChildrenDepthFirst()));
     }
 
+    /**
+     * Returns a stream of all children in a breadth first order, for example a structure
+     * <pre>
+     * services:
+     *   service1:
+     *     name: service one
+     *   service2:
+     *     name: service two
+     * </pre>
+     * {@code services.allChildrenDepthFirst()} would produce a stream ordered
+     * [service1, service2, service1.name, service2.name]
+     *
+     * As such breadth first searching can be implemented, for example
+     * <pre>{@code
+     * services.allChildrenBreadthFirst()
+     *     .anyMatch(child -> child.key().asString().equals("service2")); // true
+     * }</pre>
+     *
+     * @return stream of all children of this instance at any depth
+     */
     default Stream<Dynamic> allChildrenBreadthFirst() {
         return StreamSupport.stream(spliteratorUnknownSize(new BreadthChildIterator(this), Spliterator.ORDERED), false);
     }
