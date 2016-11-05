@@ -1,25 +1,45 @@
 package alexh;
 
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import alexh.weak.Dynamic;
-import alexh.weak.Weak;
 import alexh.weak.XmlDynamic;
+import com.google.common.collect.ImmutableMultimap;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertTrue;
 
-/**
- * Created by tp50217 on 23/06/2016.
- */
 public class DynamicXmlThreadSafetyTest {
 
-    private static final int TEST_CONCURRENCY = 100;
+    private static int TEST_CONCURRENCY = 200;
+    private static final String XML =
+        "<xml xmlns:s=\"http://example.com/rootspace/something\">" +
+            "<el att2=\"hello\" s:att=\"123\">234</el>" +
+            "<s:el att=\"345\" att2=\"blah\">456</s:el>" +
+        "</xml>";
+
+    /** key to #asObject() value expectation */
+    private static final ImmutableMultimap<Object, String> expectedValues = ImmutableMultimap.<Object, String>builder()
+        .put("xml", "<el att2=\"hello\" xmlns:s=\"http://example.com/rootspace/something\" s:att=\"123\">234</el>" +
+            "<s:el xmlns:s=\"http://example.com/rootspace/something\" att=\"345\" att2=\"blah\">456</s:el>")
+        .put("@s", "http://example.com/rootspace/something")
+        .put("el", "234")
+        .put("@att", "123")
+        .put("@att2", "hello")
+        .put("el[1]", "456")
+        .put("@att", "345")
+        .put("@att2", "blah")
+        .build();
+
     private ExecutorService exe;
 
     @Before
@@ -32,51 +52,103 @@ public class DynamicXmlThreadSafetyTest {
         exe.shutdownNow();
     }
 
+    /** Construction of a XmlDynamic from a string should be thread-safe */
     @Test
     public void construction() {
-        List<CompletableFuture<?>> results = IntStream.range(0, TEST_CONCURRENCY)
+        List<CompletableFuture<RuntimeException>> results = IntStream.range(0, TEST_CONCURRENCY)
             .mapToObj(j -> CompletableFuture.supplyAsync(() -> {
                 try {
-                    return new XmlDynamic(DynamicXmlTest.XML);
-                }
-                catch (RuntimeException ex) {
-                    ex.printStackTrace();
-                    throw ex;
-                }
-            }, exe))
-            .collect(toList());
-
-        long errorCount = results.stream()
-            .filter(CompletableFuture::isCompletedExceptionally)
-            .count();
-
-        assertTrue(errorCount + "/" + TEST_CONCURRENCY + " call(s) were exceptional", errorCount == 0);
-    }
-
-    @Test
-    public void children() {
-        Dynamic xml = new XmlDynamic("<xml><el att=\"123\" att2=\"hello\">234</el><el att=\"345\" att2=\"blah\">456</el></xml>").get("xml");
-
-        List<CompletableFuture<?>> results = IntStream.range(0, TEST_CONCURRENCY)
-            .mapToObj(j -> CompletableFuture.supplyAsync(() -> {
-                try {
-                    xml.children().forEach(el -> {
-                        el.asObject(); // all children are always present, ie no exception
-                        el.children().forEach(Weak::asObject); // so are the attributes
-                    });
+                    new XmlDynamic(XML);
                     return null;
                 }
                 catch (RuntimeException ex) {
-                    ex.printStackTrace();
-                    throw ex;
+                    return ex;
                 }
             }, exe))
             .collect(toList());
 
-        long errorCount = results.stream()
-            .filter(CompletableFuture::isCompletedExceptionally)
-            .count();
+        List<RuntimeException> errors = results.stream()
+            .map(CompletableFuture::join)
+            .filter(ex -> ex != null)
+            .collect(toList());
 
-        assertTrue(errorCount + "/" + TEST_CONCURRENCY + " call(s) were exceptional", errorCount == 0);
+        if (!errors.isEmpty())
+            errors.get(0).printStackTrace();
+        assertTrue(errors.size() + "/" + TEST_CONCURRENCY + " call(s) were exceptional", errors.isEmpty());
+    }
+
+    /** All read access to an XmlDynamic should be thread-safe */
+    @Test
+    public void children() throws Throwable {
+        final XmlDynamic xml = new XmlDynamic(XML);
+
+        List<CompletableFuture<Throwable>> results = IntStream.range(0, TEST_CONCURRENCY)
+            .mapToObj(iteration -> CompletableFuture.supplyAsync(() -> {
+                try {
+                    Object rootKey = xml.key().asObject();
+                    Object rootVal = xml.asObject();
+
+                    assertThat(rootKey).isEqualTo("root");
+                    assertThat(rootVal).isEqualTo(XML);
+                    callAllXmlDynamicMethodsOn(xml);
+
+                    // try both orders of children streaming
+                    Stream<Dynamic> allChildren = iteration % 2 == 0 ? xml.allChildrenDepthFirst() :
+                        xml.allChildrenBreadthFirst();
+
+                    long count = allChildren.map(child -> {
+                        // all children & keys are always present, ie no exception
+                        Object val = child.asObject();
+                        Object key = child.key().asObject();
+
+                        assertThat(key)
+                            .as("child.key().asObject()")
+                            .isIn(expectedValues.keySet());
+                        assertThat(val)
+                            .as("child.asObject() (for '" + key + "')")
+                            .isIn(expectedValues.get(key));
+
+                        callAllXmlDynamicMethodsOn(child);
+                        return 1;
+                    }).count();
+
+                    assertThat(count).isEqualTo(8);
+                    return null;
+                }
+                catch (Throwable ex) { return ex; }
+            }, exe))
+            .collect(toList());
+
+        List<Throwable> errors = results.stream()
+            .map(CompletableFuture::join)
+            .filter(r -> r != null)
+            .collect(toList());
+
+        if (!errors.isEmpty()) {
+            System.err.println(errors.size() + "/" + TEST_CONCURRENCY + " call(s) were exceptional");
+            throw errors.get(0);
+        }
+    }
+
+    private void callAllXmlDynamicMethodsOn(Dynamic d) {
+        XmlDynamic xml = (XmlDynamic) d;
+        xml.describe();
+        xml.toString();
+        xml.fullXml();
+        xml.hashCode();
+    }
+
+    /** Manual use to try and force rare race conditions */
+//    @Test
+    public void longTest() throws Throwable {
+        TEST_CONCURRENCY = 5000;
+
+        final Duration runAtLeast = Duration.ofMinutes(5);
+        final LocalDateTime before = LocalDateTime.now();
+
+        while (Duration.between(before, LocalDateTime.now()).compareTo(runAtLeast) < 0) {
+            construction();
+            children();
+        }
     }
 }

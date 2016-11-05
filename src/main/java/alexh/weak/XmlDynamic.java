@@ -18,14 +18,6 @@ package alexh.weak;
 import static alexh.Unchecker.uncheckedGet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -35,6 +27,14 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
 
 /**
  * Dynamic implementation for XML documents
@@ -259,7 +259,9 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
 
     @Override
     public Stream<Dynamic> children() {
-        return Stream.concat(elements(), attributes());
+        synchronized (inner.getOwnerDocument()) {
+            return Stream.concat(elements(), attributes());
+        }
     }
 
     @Override
@@ -331,12 +333,18 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
 
     @Override
     public String asObject() {
-        return serializer().writeToString(inner);
+        synchronized (inner.getOwnerDocument()) {
+            return serializer().writeToString(inner);
+        }
     }
 
     /** @return this dynamic key->value entry as an XML string */
     public String fullXml() {
-        try { return serializer().writeToString(inner); }
+        try {
+            synchronized (inner.getOwnerDocument()) {
+                return serializer().writeToString(inner);
+            }
+        }
         catch (RuntimeException ex) { return FALLBACK_TO_STRING; }
     }
 
@@ -358,12 +366,14 @@ public class XmlDynamic extends AbstractDynamic<Node> implements Describer {
 
         @Override
         public String asObject() {
-            return Optional.ofNullable(inner.getFirstChild())
-                .map(Node::getNodeValue)
-                .orElseGet(() -> elements().map(Child::fullXml)
-                            .map(String::trim)
-                            .reduce((s1, s2) -> s1 + s2)
-                            .orElse(""));
+            synchronized (inner.getOwnerDocument()) {
+                return Optional.ofNullable(inner.getFirstChild())
+                    .map(Node::getNodeValue)
+                    .orElseGet(() -> elements().map(Child::fullXml)
+                        .map(String::trim)
+                        .reduce((s1, s2) -> s1 + s2)
+                        .orElse(""));
+            }
         }
 
         @Override

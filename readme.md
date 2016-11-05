@@ -151,9 +151,16 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 ```
 
 ### Changelog
-3.0
+Release 3.x
  - Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBredthFirst() deep child streaming
  - Add XmlDynamic.hasElementName(String) namespace support
+ 
+3.1
+ - Prevent rare XmlDynamic thread safety issues
+
+Release 2.x
+ - `java.util.Collection` instance support, ie Sets now have children
+ - Minor format change to error messages
 
 2.3
  - Fix thread-safety issue with XmlDynamic#children() traversal
@@ -163,7 +170,3 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 2.1
  - Fix conversions of some zoned iso strings into `ZonedDateTime` instances
-
-2.0
- - `java.util.Collection` instance support, ie Sets now have children
- - Minor format change to error messages
