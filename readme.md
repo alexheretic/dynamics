@@ -140,13 +140,13 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-3.0 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+3.1 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>3.0</version>
+  <version>3.1</version>
 </dependency>
 ```
 
