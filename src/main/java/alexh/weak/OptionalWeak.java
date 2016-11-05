@@ -44,7 +44,7 @@ public class OptionalWeak<W extends Weak<W>>  {
     public OptionalWeak<W> filter(Predicate<? super W> predicate) {
         Objects.requireNonNull(predicate);
         if (!isPresent()) return this;
-        else return predicate.test(get()) ? this : empty();
+        return predicate.test(get()) ? this : empty();
     }
 
     /** @see Optional#map(Function) */

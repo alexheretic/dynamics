@@ -65,7 +65,7 @@ public interface Dynamic extends Weak<Dynamic> {
         else if (val instanceof Map) return new DynamicMap((Map) val);
         else if (val instanceof List) return new DynamicList((List) val);
         else if (val instanceof Collection) return new DynamicCollection((Collection) val);
-        else return new DynamicSomething(val);
+        return new DynamicSomething(val);
     }
 
     /**

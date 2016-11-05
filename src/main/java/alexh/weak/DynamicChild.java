@@ -32,7 +32,7 @@ interface DynamicChild extends Dynamic {
         if (val instanceof Map) return new DynamicMap.Child(parent, key, (Map) val);
         else if (val instanceof List) return new DynamicList.Child(parent, key, (List) val);
         else if (val instanceof Collection) return new DynamicCollection.Child(parent, key, (Collection) val);
-        else return new DynamicSomething.Child(parent, key, val);
+        return new DynamicSomething.Child(parent, key, val);
     }
 
     static DynamicChild key(Dynamic parent, Object key) {
