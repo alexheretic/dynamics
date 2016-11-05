@@ -61,10 +61,10 @@ public interface Dynamic extends Weak<Dynamic> {
      */
     static Dynamic from(Object val) {
         if (val == null) return DynamicNothing.INSTANCE;
-        else if (val instanceof Dynamic) return (Dynamic) val;
-        else if (val instanceof Map) return new DynamicMap((Map) val);
-        else if (val instanceof List) return new DynamicList((List) val);
-        else if (val instanceof Collection) return new DynamicCollection((Collection) val);
+        if (val instanceof Dynamic) return (Dynamic) val;
+        if (val instanceof Map) return new DynamicMap((Map) val);
+        if (val instanceof List) return new DynamicList((List) val);
+        if (val instanceof Collection) return new DynamicCollection((Collection) val);
         return new DynamicSomething(val);
     }
 
