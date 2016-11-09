@@ -1,14 +1,10 @@
 package alexh;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.AllOf.allOf;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import alexh.weak.Dynamic;
-import java.math.BigDecimal;
 import org.junit.Test;
+import java.math.BigDecimal;
 
 public class DynamicMapTest {
 
@@ -23,8 +19,8 @@ public class DynamicMapTest {
 
     @Test
     public void key() {
-        assertThat(dynamicMap.key().asObject(), is(Dynamic.ROOT_KEY));
-        assertThat(dynamicMap.get("hello").key().asObject(), is("hello"));
+        assertThat(dynamicMap.key().asObject()).isEqualTo(Dynamic.ROOT_KEY);
+        assertThat(dynamicMap.get("hello").key().asObject()).isEqualTo("hello");
     }
 
     @Test
@@ -38,10 +34,12 @@ public class DynamicMapTest {
             .append(22, "hello")
             .append("22", "olleh"));
 
-        assertThat(dy.get("1").get("2222222222222222").asObject(), equalTo(123));
-        assertThat(dy.get(someObject.toString()).asObject(), equalTo("hello"));
+        assertThat(dy.get("1").get("2222222222222222").asObject()).isEqualTo(123);
+        assertThat(dy.get(someObject.toString()).asObject()).isEqualTo("hello");
 
-        assertThat("Should choose exact match over toString", dy.get("22").asObject(), equalTo("olleh"));
+        assertThat(dy.get("22").asObject())
+            .as("Should choose exact match over toString")
+            .isEqualTo("olleh");
     }
 
     @Test
@@ -55,10 +53,12 @@ public class DynamicMapTest {
             .append(22, "hello")
             .append("22", "olleh"));
 
-        assertThat(dy.get(1).get(new BigDecimal(2222222222222222l)).asObject(), equalTo(123));
-        assertThat(dy.get(someObject).asObject(), equalTo("hello"));
+        assertThat(dy.get(1).get(new BigDecimal(2222222222222222L)).asObject()).isEqualTo(123);
+        assertThat(dy.get(someObject).asObject()).isEqualTo("hello");
 
-        assertThat("Should choose exact match over toString", dy.get(22).asObject(), equalTo("hello"));
+        assertThat(dy.get(22).asObject())
+            .as("Should choose exact match over toString")
+            .isEqualTo("hello");
     }
 
     @Test
@@ -77,7 +77,10 @@ public class DynamicMapTest {
 
     @Test
     public void toStringImplementation() {
-        assertThat(dynamicMap.toString(), allOf(containsString("root"), containsString("hello"), containsString("whats")));
+        assertThat(dynamicMap.toString())
+            .contains("root")
+            .contains("hello")
+            .contains("whats");
         System.out.println("map dynamic toString: "+ dynamicMap);
     }
 
@@ -108,10 +111,15 @@ public class DynamicMapTest {
         Dynamic presentChild = dynamicMap2.get("dictionary");
         Dynamic absentChild = dynamicMap2.get(1).get("foo").get("bar");
 
-        assertThat(presentChild.toString().toLowerCase(), allOf(containsString("root->dictionary"), containsString("map")));
+        assertThat(presentChild.toString())
+            .containsIgnoringCase("root->dictionary")
+            .containsIgnoringCase("map");
 
-        assertThat(absentChild.toString().toLowerCase(), allOf(containsString("root"), containsString("1"),
-            containsString("foo"), containsString("bar")));
+        assertThat(absentChild.toString())
+            .containsIgnoringCase("root")
+            .containsIgnoringCase("1")
+            .containsIgnoringCase("foo")
+            .containsIgnoringCase("bar");
 
         System.out.println("map-child dynamic toString: "+ presentChild);
     }

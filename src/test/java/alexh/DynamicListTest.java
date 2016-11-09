@@ -4,12 +4,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.AllOf.allOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -51,10 +48,10 @@ public class DynamicListTest {
     @Test
     public void children() {
         List<Dynamic> children = dy.children().collect(toList());
-        Assertions.assertThat(children.get(1).asObject())
+        assertThat(children.get(1).asObject())
             .as(children.toString())
             .isEqualTo("hello");
-        Assertions.assertThat(children.get(3).asObject())
+        assertThat(children.get(3).asObject())
             .as(children.toString())
             .isEqualTo(asList(1, 2, 3, null));
     }
@@ -77,28 +74,30 @@ public class DynamicListTest {
 
     @Test
     public void toStringImplementation() {
-        assertThat(dy.toString(), allOf(containsString("root"), containsString("0..3")));
+        assertThat(dy.toString())
+            .contains("root")
+            .contains("0..3");
         System.out.println("list dynamic toString: "+ dy);
     }
 
     @Test
     public void toStringImplementationSize0() {
         Dynamic dynamic = Dynamic.from(emptyList());
-        assertThat(dynamic.toString(), containsString("Empty-List"));
+        assertThat(dynamic.toString()).contains("Empty-List");
         System.out.println("list dynamic toString: "+ dynamic);
     }
 
     @Test
     public void toStringImplementationSize1() {
         Dynamic dynamic = Dynamic.from(singletonList("foo"));
-        assertThat(dynamic.toString(), containsString("[0]"));
+        assertThat(dynamic.toString()).contains("[0]");
         System.out.println("list dynamic toString: "+ dynamic);
     }
 
     @Test
     public void toStringImplementationSize2() {
         Dynamic dynamic = Dynamic.from(asList("foo", "bar"));
-        assertThat(dynamic.toString(), containsString("[0, 1]"));
+        assertThat(dynamic.toString()).contains("[0, 1]");
         System.out.println("list dynamic toString: "+ dynamic);
     }
 
@@ -152,10 +151,14 @@ public class DynamicListTest {
         assertTrue("oh dear", presentChild.isPresent());
         assertFalse("oh dear", absentChild.isPresent());
 
-        assertThat(presentChild.toString().toLowerCase(), allOf(containsString("root->3"), containsString("list")));
+        assertThat(presentChild.toString())
+            .containsIgnoringCase("root->3")
+            .containsIgnoringCase("list");
 
-        assertThat(absentChild.toString().toLowerCase(), allOf(containsString("root"), containsString("1"),
-            containsString("foo")));
+        assertThat(absentChild.toString())
+            .containsIgnoringCase("root")
+            .containsIgnoringCase("1")
+            .containsIgnoringCase("foo");
 
         System.out.println("list-child dynamic toString: "+ presentChild);
     }

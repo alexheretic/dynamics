@@ -1,8 +1,6 @@
 package alexh;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.AllOf.allOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import alexh.weak.Dynamic;
@@ -33,7 +31,7 @@ public class DynamicNullTest {
 
     @Test
     public void toStringImplementation() {
-        assertThat(Dynamic.from(null).toString(), allOf(containsString("root"), containsString("null")));
+        assertThat(Dynamic.from(null).toString()).contains("root").contains("null");
         System.out.println("null dynamic toString: " + Dynamic.from(null));
     }
 
@@ -55,7 +53,10 @@ public class DynamicNullTest {
     @Test
     public void childToStringImplementation() {
         Dynamic obj = Dynamic.from(new Object()).get(123).get("bar");
-        assertThat(obj.toString().toLowerCase(), allOf(containsString("root"), containsString("123"), containsString("bar")));
+        assertThat(obj.toString())
+            .containsIgnoringCase("root")
+            .containsIgnoringCase("123")
+            .containsIgnoringCase("bar");
         System.out.println("null-child dynamic toString: "+ obj);
     }
 }
