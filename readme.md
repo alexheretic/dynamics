@@ -152,7 +152,7 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Changelog
 Release 3.x
-* Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBredthFirst() deep child streaming
+* Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBreadthFirst() deep child streaming
 * Add XmlDynamic.hasElementName(String) namespace support
 * 3.1
  *  Prevent rare XmlDynamic thread safety issues
