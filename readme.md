@@ -9,20 +9,11 @@ Dynamics is a Java library for handling nested weakly-typed data in a fluent and
 Initially developed to help handle JSON and XML messages in a direct way without tedious and repetitive null checking, type conversion & casting. It has become a powerful & productive way of directly dealing with dynamic data without the horribleness that can typically involve.
 
 ## Weakly-Typed Nested Data Structure Handling
-```json
-{
-  "product": {
-    "investment": {
-      "investment-1": 12345.33,
-      "investment-2": 43213.44
-    },
-    "id": "RR1209478",
-    "effective": "2015-03-07T00:35:11"
-  }
-}
-```
 ```java
-Dynamic.from(jsonMap)
+Map nestedMap = ...
+// {product={investment={investment-1=12345.33, investment-2=43213.44}, effective=2015-03-07T00:35:11}}
+
+Dynamic.from(nestedMap)
     .get("product")
     .get("effective")
     .convert().intoLocalDateTime(); // java.time.LocalDateTime 2015-03-07T00:35:11
@@ -70,7 +61,7 @@ Dynamic instances throw descriptive exceptions when data is missing, or not as s
 ```java
 // exception message:
 // "'holdings' key is missing in path root->product->*holdings*->foo->bar,
-//   available root->product: Map[effective, investment, id]"
+//   available root->product: Map[effective, investment]"
 message.dget("product.holdings.foo.bar").asObject(); // throws
 ```
 #### Type Conversion
