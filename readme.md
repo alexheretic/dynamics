@@ -24,13 +24,13 @@ Dynamic.from(nestedMap)
 An `alexh.weak.Dynamic` object is a weakly-typed, possible nested structure that allows null-safe child selection, creating the Dynamic wrapper is easy
 
 ```java
-Dynamic message = Dynamic.from(jsonMap); // 'jsonMap' is a Map of the above JSON data
+Dynamic message = Dynamic.from(nestedMap);
 ```
 
 Each 'get' call returns a non-null Dynamic instance that represents the child with that key, or the key's absence. Finally the wrapped object target can be accessed with `asObject()`, or `as(Class)` to cast.
 
 ```java
-Dynamic investment1 = message.get("product").get("investment").get("investment-1");
+Dynamic investment1 = message.get("product").get("investment").get("investment-1"); // null & exception safe
 investment1.isPresent(); // true
 investment1.as(BigDecimal.class); // 12345.33, assuming it is a BigDecimal
 ```
