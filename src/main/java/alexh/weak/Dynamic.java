@@ -15,6 +15,7 @@
  */
 package alexh.weak;
 
+import static java.lang.String.format;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import java.util.Collection;
 import java.util.List;
@@ -166,5 +167,22 @@ public interface Dynamic extends Weak<Dynamic> {
      */
     default Stream<Dynamic> allChildrenBreadthFirst() {
         return StreamSupport.stream(spliteratorUnknownSize(new BreadthChildIterator(this), Spliterator.ORDERED), false);
+    }
+
+    /**
+     * As {@link #asObject()} casting to input type, and providing a better message in the exceptional case
+     * @param type cast type
+     * @param <T> cast type
+     * @return unwrapped inner value cast to input type
+     * @throws ClassCastException when the wrapped instance that cannot be cast to the input
+     * @throws java.util.NoSuchElementException when this dynamic is not present, ie wraps no, or null, value
+     */
+    @Override
+    default <T> T as(Class<T> type) {
+        try { return type.cast(asObject()); }
+        catch (ClassCastException ex) {
+            throw new ClassCastException(format("'root' miscast: %s. Avoid by checking `if (aDynamic.is(%s.class)) ...` " +
+                "or using `aDynamic.maybe().as(%<s.class)`", ex.getMessage(), type.getSimpleName()));
+        }
     }
 }

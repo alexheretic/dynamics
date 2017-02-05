@@ -1,21 +1,20 @@
 package alexh;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import alexh.weak.Dynamic;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.junit.Before;
-import org.junit.Test;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DynamicBaseTest {
 
@@ -235,9 +234,10 @@ public class DynamicBaseTest {
         assertEquals(asList(1, 2, 3, 4), dy.get("b").asList());
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void getAsList_notList() {
-        dy.get("a").asList();
+        assertThatThrownBy(() -> dy.get("a").asList())
+            .isInstanceOf(ClassCastException.class);
     }
 
     @Test(expected = NoSuchElementException.class)

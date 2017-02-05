@@ -15,10 +15,10 @@
  */
 package alexh.weak;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import static alexh.weak.DynamicChildLogic.using;
+import static java.lang.String.format;
+import alexh.LiteJoiner;
+import java.util.*;
 
 interface DynamicChild extends Dynamic {
 
@@ -40,4 +40,18 @@ interface DynamicChild extends Dynamic {
     }
 
     Dynamic parent();
+
+    /* provides a better ClassCastMessage */
+    @Override
+    default <T> T as(Class<T> type) {
+        try { return type.cast(asObject()); }
+        catch (ClassCastException ex) {
+            LinkedList<Object> ascendingKeyChain = using(this).getAscendingKeyChainWithRoot();
+            Object thisKey = ascendingKeyChain.pollLast();
+            ascendingKeyChain.add(format("*%s*", thisKey));
+            throw new ClassCastException(format("'%s' miscast in path %s: %s. Avoid by checking " +
+                    "`if (aDynamic.is(%s.class)) ...` or using `aDynamic.maybe().as(%<s.class)`",
+                thisKey, LiteJoiner.on(ARROW).join(ascendingKeyChain), ex.getMessage(), type.getSimpleName()));
+        }
+    }
 }

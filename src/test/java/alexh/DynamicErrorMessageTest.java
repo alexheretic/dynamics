@@ -7,16 +7,22 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DynamicErrorMessageTest {
 
-    private static String errorMessage(Runnable runnable) {
+    private static String noSuchElementErrorMessage(Runnable runnable) {
         try  { runnable.run(); }
         catch (NoSuchElementException e) { return e.getMessage(); }
+        throw new AssertionError("Runnable did not error as expected");
+    }
+
+    private static String classCastErrorMessage(Runnable runnable) {
+        try  { runnable.run(); }
+        catch (ClassCastException e) { return e.getMessage(); }
         throw new AssertionError("Runnable did not error as expected");
     }
 
@@ -41,7 +47,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_topLevelMissing() {
-        String message = errorMessage(() -> dy.get("foo").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("foo").asObject());
         assertThat(message).as("message for top level child missing")
             .contains("foo")
             .containsIgnoringCase("missing")
@@ -54,7 +60,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedMissingFromMap() {
-        String message = errorMessage(() -> dy.get("key1").get("key3").get("bar").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key1").get("key3").get("bar").asObject());
 
         assertThat(message).as("message for a child missing from a nested Map")
             .contains("bar")
@@ -71,7 +77,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedMissingLongChain() {
-        String message = errorMessage(() -> dy.get("key1").get("key3").get("barrr").get("A")
+        String message = noSuchElementErrorMessage(() -> dy.get("key1").get("key3").get("barrr").get("A")
             .get("B").get("C").get("D").get("E").get("F").get("G").get("H").get("I").get("J")
             .get("K").get("L").get("M").get("N").get("O").get("P").get("Q").get("R").get("S")
             .get("T").get("U").get("V").get("W").get("X").get("Y").get("Z").asObject());
@@ -85,7 +91,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedMissingFromObject() {
-        String message = errorMessage(() -> dy.get("key1").get("key3").get("key4").get("blah").get("bar").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key1").get("key3").get("key4").get("blah").get("bar").asObject());
 
         assertThat(message).as("message for missing child from Object")
             .contains("'key4'")
@@ -97,7 +103,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedMapNull() {
-        String message = errorMessage(() -> dy.get("key1").get("key3").get("key6").get("key7").get("key8").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key1").get("key3").get("key6").get("key7").get("key8").asObject());
 
         assertThat(message).as("message for a nested null within a Map")
             .contains("'key6'")
@@ -109,7 +115,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedListNull() {
-        String message = errorMessage(() -> dy.get("key9").get(3).asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key9").get(3).asObject());
 
         assertThat(message).as("message for a null inside a nested List")
             .contains("'3'")
@@ -121,7 +127,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedListNullChildren() {
-        String message = errorMessage(() -> dy.get("key9").get(3).get("foo").get("bar").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key9").get(3).get("foo").get("bar").asObject());
 
         assertThat(message).as("message for a child of a nested list null-value")
             .contains("'3'")
@@ -133,7 +139,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedEmptyMap() {
-        String message = errorMessage(() -> dy.get("key1").get("key3").get("key7").get("key8").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key1").get("key3").get("key7").get("key8").asObject());
 
         assertThat(message).as("message for a child of a nested empty map 'key7'")
             .contains("'key7'")
@@ -145,7 +151,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedListArrayOutOfBounds() {
-        String message = errorMessage(() -> dy.get("key5").get(4).asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key5").get(4).asObject());
 
         assertThat(message).as("message for child of Integer at index 4 of nested list 'key5'")
             .contains("'4'")
@@ -158,7 +164,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedListNonIntegerGet() {
-        String message = errorMessage(() -> dy.get("key5").get("foo").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key5").get("foo").asObject());
 
         assertThat(message).as("message for a nested list 'key5' non numeric get")
             .contains("'foo'")
@@ -171,7 +177,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedEmptyList() {
-        String message = errorMessage(() -> dy.get("key8").get(4).get("bar").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key8").get(4).get("bar").asObject());
 
         assertThat(message).as("message for getting index 4 of nested empty list 'key8'")
             .contains("'key8'", "premature end", "*key8*->4->bar")
@@ -181,7 +187,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_dynamicFromNull() {
-        String message = errorMessage(() -> Dynamic.from(null).asObject());
+        String message = noSuchElementErrorMessage(() -> Dynamic.from(null).asObject());
 
         assertThat(message).as("message for casting assertion null -> object")
             .contains("premature end", "root", "null");
@@ -190,7 +196,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_dynamicFromNullNested() {
-        String message = errorMessage(() -> Dynamic.from(null).get("foo").get("bar").get(33).asObject());
+        String message = noSuchElementErrorMessage(() -> Dynamic.from(null).get("foo").get("bar").get(33).asObject());
 
         assertThat(message).as("message for chain of gets on a null root")
             .contains("'root'", "premature end", "*root*->foo->bar->33", "null");
@@ -199,7 +205,7 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedCollectionGet() {
-        String message = errorMessage(() -> dy.get("key10").get(33).asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key10").get(33).asObject());
 
         assertThat(message).as("message for get from Collection 'key10'")
             .contains("'33'")
@@ -212,11 +218,31 @@ public class DynamicErrorMessageTest {
 
     @Test
     public void message_nestedEmptyCollection() {
-        String message = errorMessage(() -> dy.get("key11").get("foo").asObject());
+        String message = noSuchElementErrorMessage(() -> dy.get("key11").get("foo").asObject());
 
         assertThat(message).as("message for get from empty collection 'key11'")
             .contains("'key11'", "premature end", "*key11*->foo")
             .containsIgnoringCase("Empty-Collection");
+        System.out.println(message);
+    }
+
+    @Test
+    public void miscastRoot() {
+        String message = classCastErrorMessage(() -> dy.as(Long.class));
+
+        assertThat(message).as("message for get from miscast root -> Long")
+            .contains("'root'", "miscast", "alexh.Fluent$HashMap", "java.lang.Long")
+            .contains("Avoid by checking `if (aDynamic.is(Long.class)) ...` or using `aDynamic.maybe().as(Long.class)`");
+        System.out.println(message);
+    }
+
+    @Test
+    public void miscastChild() {
+        String message = classCastErrorMessage(() -> dy.dget("key1.key2").asList());
+
+        assertThat(message).as("message for get from miscast key2 -> List")
+            .contains("'key2'", "miscast", "root->key1->*key2*", "java.lang.String", "java.util.List")
+            .contains("Avoid by checking `if (aDynamic.is(List.class)) ...` or using `aDynamic.maybe().as(List.class)`");
         System.out.println(message);
     }
 }

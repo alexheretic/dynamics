@@ -52,7 +52,8 @@ public interface Weak<Self extends Weak<Self>> {
      * @param type cast type
      * @param <T> cast type
      * @return unwrapped inner value cast to input type
-     * @throws ClassCastException
+     * @throws ClassCastException when the wrapped instance that cannot be cast to the input
+     * @throws java.util.NoSuchElementException absent
      */
     default <T> T as(Class<T> type) {
         return type.cast(asObject());
