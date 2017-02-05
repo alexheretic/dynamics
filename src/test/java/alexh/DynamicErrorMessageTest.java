@@ -7,6 +7,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import alexh.weak.Dynamic;
+import alexh.weak.Weak;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
 import org.junit.Before;
@@ -243,6 +244,25 @@ public class DynamicErrorMessageTest {
         assertThat(message).as("message for get from miscast key2 -> List")
             .contains("'key2'", "miscast", "root->key1->*key2*", "java.lang.String", "java.util.List")
             .contains("Avoid by checking `if (aDynamic.is(List.class)) ...` or using `aDynamic.maybe().as(List.class)`");
+        System.out.println(message);
+    }
+
+    @Test
+    public void miscastWeak() {
+        Weak weak = new Weak() {
+            @Override
+            public boolean isPresent() {
+                return true;
+            }
+            @Override
+            public Object asObject() {
+                return "some string";
+            }
+        };
+
+        String message = classCastErrorMessage(() -> weak.as(Integer.class));
+        assertThat(message).as("basic weak message for miscasting")
+            .contains("java.lang.String", "java.lang.Integer");
         System.out.println(message);
     }
 }
