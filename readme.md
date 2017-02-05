@@ -131,17 +131,20 @@ Dynamics is licensed under the [Apache 2.0 licence](http://www.apache.org/licens
 
 ### Releases
 
-3.1 is the latest release, available at maven central. Requiring JDK 1.8 or later.
+4.0 is the latest release, available at maven central. Requiring JDK 1.8 or later.
 
 ```xml
 <dependency>
   <groupId>com.github.alexheretic</groupId>
   <artifactId>dynamics</artifactId>
-  <version>3.1</version>
+  <version>4.0</version>
 </dependency>
 ```
 
 ### Changelog
+Release 4.x
+* Add enhanced ClassCastException messages
+
 Release 3.x
 * Add Dynamic#allChildren(), #allChildrenDepthFirst(), #allChildrenBreadthFirst() deep child streaming
 * Add XmlDynamic.hasElementName(String) namespace support
