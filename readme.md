@@ -1,10 +1,9 @@
 Dynamics
-========
-Dynamics is a Java library for handling nested weakly-typed data in a fluent and null-safe way.
-
 [![Build Status](https://travis-ci.org/alexheretic/dynamics.svg?branch=master)](https://travis-ci.org/alexheretic/dynamics)
 [![Coverage Status](https://coveralls.io/repos/alexheretic/dynamics/badge.svg?branch=master&service=github)](https://coveralls.io/github/alexheretic/dynamics?branch=master)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.alexheretic/dynamics.svg)](http://mvnrepository.com/artifact/com.github.alexheretic/dynamics)
+========
+Dynamics is a Java library for handling nested weakly-typed data in a fluent and null-safe way.
 
 Initially developed to help handle JSON and XML messages in a direct way without tedious and repetitive null checking, type conversion & casting. It has become a powerful & productive way of directly dealing with dynamic data without the horribleness that can typically involve.
 
