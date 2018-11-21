@@ -1,14 +1,11 @@
 package alexh;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DynamicXmlNamespaceTest {
 
@@ -74,37 +71,36 @@ public class DynamicXmlNamespaceTest {
 
     @Test
     public void standardUsageIgnoresNamespaces() {
-        Assert.assertThat(root.get("xml|content|large_decimal").asString(), is("12341234123412341234.334234"));
-        Assert.assertThat(root.get("xml|content[1]|multi_element").asString(), is("123"));
+        assertThat(root.get("xml|content|large_decimal").asString()).isEqualTo("12341234123412341234.334234");
+        assertThat(root.get("xml|content[1]|multi_element").asString()).isEqualTo("123");
     }
 
     @Test
     public void colonUsedToDeclareExplicitNamespaceSelection() {
-        Assert.assertThat(root.get("xml|http://another-example.com::content|http://another-example.com::multi_element")
-            .asString(), is("hello there"));
+        assertThat(root.get("xml|http://another-example.com::content|http://another-example.com::multi_element")
+            .asString()).isEqualTo("hello there");
     }
 
     @Test
     public void mixedExplicitNamespaceAndNonExplicitSelection() {
-        Assert.assertThat(root.get("xml|http://another-example.com::content|int_element").asString(), is("23456"));
+        assertThat(root.get("xml|http://another-example.com::content|int_element").asString()).isEqualTo("23456");
     }
 
     @Test
     public void explicitNoNamespaceSelection() {
-        Assert.assertThat(root.get("xml|content[1]|none::multi_element").asString(), is("456"));
+        assertThat(root.get("xml|content[1]|none::multi_element").asString()).isEqualTo("456");
         assertFalse(root.get("xml|content|none::large_decimal").isPresent());
     }
 
     @Test
     public void standardUsageIgnoresNamespacesOnAttributes() {
-        Assert.assertThat(root.get("xml|content|ns_attrs|@eses").asString(), is("ssss"));
+        assertThat(root.get("xml|content|ns_attrs|@eses").asString()).isEqualTo("ssss");
     }
 
     @Test
     public void colonUsedToDeclareExplicitNamespaceSelectionOnAttributes() {
-        Assert.assertThat(root.get("xml|content|ns_attrs|http://another-example.com::@same-name").asString(), is("why?"));
-        Assert.assertThat(root.get("xml|content|ns_attrs|http://example.com/rootspace/something::@same-name").asString(),
-            is("what?"));
+        assertThat(root.get("xml|content|ns_attrs|http://another-example.com::@same-name").asString()).isEqualTo("why?");
+        assertThat(root.get("xml|content|ns_attrs|http://example.com/rootspace/something::@same-name").asString()).isEqualTo("what?");
     }
 
     @Test
@@ -112,11 +108,12 @@ public class DynamicXmlNamespaceTest {
         String attr1 = root.get("xml|content|ns_attrs|@same-name").asString();
         String attr2 = root.get("xml|content|ns_attrs|@same-name[1]").asString();
 
-        Assert.assertThat(attr1, anyOf(is("what?"), is("why?")));
-        Assert.assertThat(attr2, anyOf(is("what?"), is("why?")));
-
-        if (attr1.equals("what?")) Assert.assertThat(attr2, is("why?"));
-        else Assert.assertThat(attr2, is("what?"));
+        if (attr1.equals("what?")) {
+            assertThat(attr2).isEqualTo("why?");
+        } else {
+            assertThat(attr1).isEqualTo("why?");
+            assertThat(attr2).isEqualTo("what?");
+        }
     }
 
     @Test

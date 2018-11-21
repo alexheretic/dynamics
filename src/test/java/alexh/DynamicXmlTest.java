@@ -2,17 +2,16 @@ package alexh;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Test;
-import org.xml.sax.InputSource;
 import java.io.StringReader;
 import java.util.List;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.InputSource;
 
 public class DynamicXmlTest {
 
@@ -191,7 +190,7 @@ public class DynamicXmlTest {
     public void asStringImplementation() {
         try {
             Diff diff = new Diff(XML, root.asString());
-            assertTrue(diff.toString(), diff.identical());
+            assertTrue(diff.identical(), diff.toString());
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -203,7 +202,7 @@ public class DynamicXmlTest {
     public void childAsStringImplementation() {
         try {
             Diff diff = new Diff("<wrap>" + XML_CONTENT_2_GUTS + "</wrap>", "<wrap>" + root.get("xml.content_2", ".").asString()+ "</wrap>");
-            assertTrue(diff.toString(), diff.identical());
+            assertTrue(diff.identical(), diff.toString());
         }
         catch (Exception ex) {
             ex.printStackTrace();

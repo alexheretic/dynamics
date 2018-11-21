@@ -5,18 +5,18 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicListTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = Dynamic.from(asList(
             new Fluent.HashMap<>()
@@ -119,9 +119,9 @@ public class DynamicListTest {
 
     @Test
     public void convertedKeyEquals() {
-        assertEquals("non-null value index conversion", dy.get(3).get("0"), dy2.get(3).get(0));
-        assertEquals("null value index conversion", dy.get(3).get("3"), dy2.get(3).get(3));
-        assertEquals("out-of-bounds value index conversion", dy.get(3).get("999"), dy2.get(3).get(999));
+        assertEquals(dy.get(3).get("0"), dy2.get(3).get(0), "non-null value index conversion");
+        assertEquals(dy.get(3).get("3"), dy2.get(3).get(3), "null value index conversion");
+        assertEquals(dy.get(3).get("999"), dy2.get(3).get(999), "out-of-bounds value index conversion");
     }
 
     @Test
@@ -132,15 +132,15 @@ public class DynamicListTest {
 
     @Test
     public void convertedKeyHashCode() {
-        assertEquals("non-null value index conversion", dy.get(3).get("0").hashCode(), dy2.get(3).get(0).hashCode());
-        assertEquals("null value index conversion", dy.get(3).get("3").hashCode(), dy2.get(3).get(3).hashCode());
-        assertEquals("out-of-bounds value index conversion", dy.get(3).get("999").hashCode(), dy2.get(3).get(999).hashCode());
+        assertEquals(dy.get(3).get("0").hashCode(), dy2.get(3).get(0).hashCode(), "non-null value index conversion");
+        assertEquals(dy.get(3).get("3").hashCode(), dy2.get(3).get(3).hashCode(), "null value index conversion");
+        assertEquals(dy.get(3).get("999").hashCode(), dy2.get(3).get(999).hashCode(), "out-of-bounds value index conversion");
     }
 
     @Test
     public void convertedPresentKeyShouldBeInteger() {
-        assertTrue("non-converted", dy.get(3).key().is(Integer.class));
-        assertTrue("converted", dy.get("3").key().is(Integer.class));
+        assertTrue(dy.get(3).key().is(Integer.class), "non-converted");
+        assertTrue(dy.get("3").key().is(Integer.class), "converted");
     }
 
     @Test
@@ -148,8 +148,8 @@ public class DynamicListTest {
         Dynamic presentChild = dy.get(3);
         Dynamic absentChild = dy.get(1).get("foo");
 
-        assertTrue("oh dear", presentChild.isPresent());
-        assertFalse("oh dear", absentChild.isPresent());
+        assertTrue(presentChild.isPresent(), "oh dear");
+        assertFalse(absentChild.isPresent(), "oh dear");
 
         assertThat(presentChild.toString())
             .containsIgnoringCase("root->3")

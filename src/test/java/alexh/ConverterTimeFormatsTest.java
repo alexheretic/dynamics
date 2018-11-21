@@ -2,9 +2,9 @@ package alexh;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import alexh.weak.ConverterTimeFormats;
-import org.junit.Test;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
+import org.junit.jupiter.api.Test;
 
 /**
  * Note: most of ConverterTimeFormats functionality is tested as part of the java.time functionality

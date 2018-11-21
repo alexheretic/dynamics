@@ -6,21 +6,21 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import alexh.weak.Dynamic;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicBaseTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = Dynamic.from(new Fluent.LinkedHashMap<>()
             .append("a", new Fluent.LinkedHashMap<>()
@@ -240,9 +240,9 @@ public class DynamicBaseTest {
             .isInstanceOf(ClassCastException.class);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void getAsList_absent() {
-        dy.get("key44").asList();
+        assertThrows(NoSuchElementException.class, () -> dy.get("key44").asList());
     }
 
     @Test
@@ -254,14 +254,14 @@ public class DynamicBaseTest {
         assertEquals(Integer.valueOf(123), key1Key3Key4);
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void getAs_notClass() {
-        dy.get("a").get("one").as(LocalDate.class).atStartOfDay();
+        assertThrows(ClassCastException.class, () -> dy.get("a").get("one").as(LocalDate.class).atStartOfDay());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void getAs_absent() {
-        dy.get("key44").as(LocalDate.class);
+       assertThrows(NoSuchElementException.class, () -> dy.get("key44").as(LocalDate.class));
     }
 
     @Test
@@ -270,14 +270,14 @@ public class DynamicBaseTest {
         assertEquals("yeah", key1Key2);
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void getAsString_notClass() {
-        dy.get("a").get("two").asString();
+        assertThrows(ClassCastException.class, () -> dy.get("a").get("two").asString());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void getAsString_absent() {
-        dy.get("key44").asString();
+        assertThrows(NoSuchElementException.class, () -> dy.get("key44").asString());
     }
 
     @Test
@@ -289,14 +289,14 @@ public class DynamicBaseTest {
             .append("zed", emptyMap()), key1Key3);
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void getAsMap_notClass() {
-        dy.get("a").get("one").get("blah").asMap();
+        assertThrows(ClassCastException.class, () -> dy.get("a").get("one").get("blah").asMap());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void getAsMap_absent() {
-        dy.get("key44").asMap();
+        assertThrows(NoSuchElementException.class, () -> dy.get("key44").asMap());
     }
 
     @Test

@@ -2,7 +2,7 @@ package alexh;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
 import com.google.common.collect.ImmutableMultimap;
@@ -14,9 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicXmlThreadSafetyTest {
 
@@ -42,12 +42,12 @@ public class DynamicXmlThreadSafetyTest {
 
     private ExecutorService exe;
 
-    @Before
+    @BeforeEach
     public void setup() {
         exe = Executors.newCachedThreadPool();
     }
 
-    @After
+    @AfterEach
     public void shutdown() {
         exe.shutdownNow();
     }
@@ -74,7 +74,7 @@ public class DynamicXmlThreadSafetyTest {
 
         if (!errors.isEmpty())
             errors.get(0).printStackTrace();
-        assertTrue(errors.size() + "/" + TEST_CONCURRENCY + " call(s) were exceptional", errors.isEmpty());
+        assertTrue(errors.isEmpty(), errors.size() + "/" + TEST_CONCURRENCY + " call(s) were exceptional");
     }
 
     /** All read access to an XmlDynamic should be thread-safe */

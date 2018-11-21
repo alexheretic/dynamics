@@ -1,16 +1,18 @@
 package alexh;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicSomethingTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = Dynamic.from("something");
         assertNotNull(dy);

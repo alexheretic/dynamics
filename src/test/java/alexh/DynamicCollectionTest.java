@@ -3,10 +3,8 @@ package alexh;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicCollectionTest {
 
@@ -27,7 +27,7 @@ public class DynamicCollectionTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         Collection<Object> collection = new LinkedBlockingDeque<>();
 
@@ -131,8 +131,8 @@ public class DynamicCollectionTest {
         Dynamic presentChild = dy.children().filter(c -> c.is(Collection.class)).findAny().get();
         Dynamic absentChild = dy.get(1).get("foo");
 
-        assertTrue("oh dear", presentChild.isPresent());
-        assertFalse("oh dear", absentChild.isPresent());
+        assertTrue(presentChild.isPresent(), "oh dear");
+        assertFalse(absentChild.isPresent(), "oh dear");
 
         assertThat(presentChild.toString()).as("present child #toString()")
             .containsIgnoringCase("root->?")

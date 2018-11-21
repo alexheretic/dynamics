@@ -5,13 +5,13 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import alexh.weak.Dynamic;
 import alexh.weak.Weak;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicErrorMessageTest {
 
@@ -29,7 +29,7 @@ public class DynamicErrorMessageTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = Dynamic.from(new Fluent.HashMap<>()
             .append("key1", new Fluent.HashMap<>()

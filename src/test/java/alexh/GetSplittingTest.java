@@ -2,17 +2,17 @@ package alexh;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import alexh.weak.Dynamic;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GetSplittingTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = Dynamic.from(new Fluent.HashMap<>()
             .append("key1", new Fluent.HashMap<>()
@@ -58,7 +58,7 @@ public class GetSplittingTest {
 
     @Test
     public void absentPath() {
-        assertFalse("Unexpected: " + dy.get("foo.bar.blah.blah", "."), dy.get("foo.bar.blah.blah", ".").isPresent());
+        assertFalse(dy.get("foo.bar.blah.blah", ".").isPresent(), "Unexpected: " + dy.get("foo.bar.blah.blah", "."));
     }
 
     @Test
@@ -73,6 +73,6 @@ public class GetSplittingTest {
 
     @Test
     public void dgetConvenienceMethod() {
-        assertThat(dy.dget("key5.3.55").asObject(), is("blah"));
+        assertThat(dy.dget("key5.3.55").asObject()).isEqualTo("blah");
     }
 }

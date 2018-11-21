@@ -1,14 +1,12 @@
 package alexh;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import alexh.weak.Dynamic;
 import alexh.weak.XmlDynamic;
-import org.junit.Before;
-import org.junit.Test;
 import java.util.NoSuchElementException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DynamicXmlErrorMessageTest {
 
@@ -20,7 +18,7 @@ public class DynamicXmlErrorMessageTest {
 
     private Dynamic dy;
 
-    @Before
+    @BeforeEach
     public void setupMap() {
         dy = new XmlDynamic(
             "<msg>" +
@@ -49,22 +47,25 @@ public class DynamicXmlErrorMessageTest {
     @Test
     public void message_topLevelMissing() {
         String message = errorMessage(() -> dy.get("foo").asObject());
-        assertThat("Should contain the key name", message, containsString("foo"));
-        assertThat("Should describe key as missing", message.toLowerCase(), containsString("missing"));
-        assertThat("Should describe the key location", message, containsString("msg->*foo*"));
-        assertThat("Should describe the available keys", message, allOf(containsString("key1"), containsString("key5")));
+        assertThat(message).as("Should contain the key name").contains("foo");
+        assertThat(message).as("Should describe key as missing").containsIgnoringCase("missing");
+        assertThat(message).as("Should describe the key location").contains("msg->*foo*");
+        assertThat(message).as("Should describe the available keys").contains("key1").contains("key5");
         System.out.println(message);
     }
 
     @Test
     public void message_nestedMissingFromMap() {
         String message = errorMessage(() -> dy.get("key1").get("key3").get("bar").asObject());
-        assertThat("Should contain the key name", message, containsString("bar"));
-        assertThat("Should describe key as missing", message.toLowerCase(), containsString("missing"));
-        assertThat("Should describe the key location", message, containsString("key1->key3->*bar*"));
-        assertThat("Should describe the available keys", message,
-            allOf(containsString("key4"), containsString("key6"), containsString("key7")));
-        assertThat("Should describe the type that was missing the key", message.toLowerCase(), containsString("xml"));
+        assertThat(message).as("Should contain the key name").contains("bar");
+        assertThat(message.toLowerCase()).as("Should describe key as missing").contains("missing");
+        assertThat(message).as("Should describe the key location").contains("key1->key3->*bar*");
+        assertThat(message)
+            .as("Should describe the available keys")
+            .contains("key4")
+            .contains("key6")
+            .contains("key7");
+        assertThat(message.toLowerCase()).as("Should describe the type that was missing the key").contains("xml");
         System.out.println(message);
     }
 
@@ -74,40 +75,40 @@ public class DynamicXmlErrorMessageTest {
             .get("B").get("C").get("D").get("E").get("F").get("G").get("H").get("I").get("J")
             .get("K").get("L").get("M").get("N").get("O").get("P").get("Q").get("R").get("S")
             .get("T").get("U").get("V").get("W").get("X").get("Y").get("Z").asObject());
-        assertThat("Should contain the key name", message, containsString("barrr"));
-        assertThat("Should describe the key location", message, containsString("key1->key3->*barrr*->A->B"));
-        assertThat("Should describe the type that was missing the key", message.toLowerCase(), containsString("xml"));
+        assertThat(message).as("Should contain the key name").contains("barrr");
+        assertThat(message).as("Should describe the key location").contains("key1->key3->*barrr*->A->B");
+        assertThat(message.toLowerCase()).as("Should describe the type that was missing the key").contains("xml");
         System.out.println(message);
     }
 
     @Test
     public void message_nestedEmptyMap() {
         String message = errorMessage(() -> dy.get("key1").get("key3").get("key7").get("key8").asObject());
-        assertThat("Should contain the key name", message, containsString("'key7'"));
-        assertThat("Should describe key as a premature end", message.toLowerCase(), containsString("premature end"));
-        assertThat("Should describe the key location", message, containsString("key1->key3->*key7*->key8"));
-        assertThat("Should describe the emptiness", message.toLowerCase(), containsString("empty-xml"));
+        assertThat(message).as("Should contain the key name").contains("'key7'");
+        assertThat(message.toLowerCase()).as("Should describe key as a premature end").contains("premature end");
+        assertThat(message).as("Should describe the key location").contains("key1->key3->*key7*->key8");
+        assertThat(message.toLowerCase()).as("Should describe the emptiness").contains("empty-xml");
         System.out.println(message);
     }
 
     @Test
     public void message_nestedListArrayOutOfBounds() {
         String message = errorMessage(() -> dy.get("key5[4]").asObject());
-        assertThat("Should contain the key name", message, containsString("'key5[4]'"));
-        assertThat("Should describe key as missing", message.toLowerCase(), containsString("missing"));
-        assertThat("Should describe the key location", message, containsString("*key5[4]*"));
-        assertThat("Should describe the type that was missing the key", message.toLowerCase(), containsString("xml"));
-        assertThat("Should describe the available keys", message, containsString("key5[0..3]"));
+        assertThat(message).as("Should contain the key name").contains("'key5[4]'");
+        assertThat(message.toLowerCase()).as("Should describe key as missing").contains("missing");
+        assertThat(message).as("Should describe the key location").contains("*key5[4]*");
+        assertThat(message.toLowerCase()).as("Should describe the type that was missing the key").contains("xml");
+        assertThat(message).as("Should describe the available keys").contains("key5[0..3]");
         System.out.println(message);
     }
 
     @Test
     public void message_nestedPrematureEndPointGet() {
         String message = errorMessage(() -> dy.get("key5[1]").get("foo").asObject());
-        assertThat("Should contain the key name", message, containsString("'key5[1]'"));
-        assertThat("Should describe key as missing", message.toLowerCase(), containsString("premature end"));
-        assertThat("Should describe the key location", message, containsString("*key5[1]*->foo"));
-        assertThat("Should describe the end point", message.toLowerCase(), containsString("xml"));
+        assertThat(message).as("Should contain the key name").contains("'key5[1]'");
+        assertThat(message.toLowerCase()).as("Should describe key as missing").contains("premature end");
+        assertThat(message).as("Should describe the key location").contains("*key5[1]*->foo");
+        assertThat(message.toLowerCase()).as("Should describe the end point").contains("xml");
         System.out.println(message);
     }
 }

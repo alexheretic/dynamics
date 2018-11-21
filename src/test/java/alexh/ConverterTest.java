@@ -5,17 +5,17 @@ import static alexh.weak.Converter.convert;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toCollection;
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import alexh.weak.Converter;
 import alexh.weak.ConverterMaybe;
-import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
 public class ConverterTest {
     
@@ -759,7 +759,7 @@ public class ConverterTest {
         Tester converts(Function<Converter, ZonedDateTime> method, ZonedDateTime expected) {
             testables.forEach(o -> {
                 ZonedDateTime actual = method.apply(convert(o));
-                assertTrue(actual + " --not-expected--> " + expected, actual.isEqual(expected));
+                assertTrue(actual.isEqual(expected), actual + " --not-expected--> " + expected);
             });
             return this;
         }
